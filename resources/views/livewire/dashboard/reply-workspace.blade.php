@@ -42,7 +42,14 @@
         @if (empty($messages))
 
             {{-- ── Empty / welcome state ── --}}
-            <div class="flex min-h-full flex-col items-center justify-center px-4 py-12">
+            <div
+                x-data="{ visible: true }"
+                x-show="visible"
+                x-transition:leave="transition duration-200 ease-in"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 -translate-y-4"
+                class="flex min-h-full flex-col items-center justify-center px-4 py-12"
+            >
                 <div class="w-full max-w-xl text-center">
 
                     {{-- Icon badge --}}
@@ -66,6 +73,7 @@
                                     type="button"
                                     class="quick-chip"
                                     wire:click="applyTemplate({{ $template->id }})"
+                                    @click="visible = false; $nextTick(() => document.querySelector('.gpt-textarea')?.focus())"
                                     title="{{ $template->prompt_hint }}"
                                 >{{ $template->name }}</button>
                             @endforeach
