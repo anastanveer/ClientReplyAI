@@ -71,6 +71,22 @@
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
     }
+
+    @keyframes thinkingPulse {
+        0%, 100% {
+            box-shadow: 0 14px 32px rgba(15,23,42,0.06), 0 0 0 0 rgba(59,130,246,0);
+            border-color: rgba(217,211,199,0.8);
+        }
+        50% {
+            box-shadow: 0 14px 32px rgba(15,23,42,0.06), 0 0 0 5px rgba(59,130,246,0.07);
+            border-color: rgba(59,130,246,0.22);
+        }
+    }
+
+    @keyframes replyReveal {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
 }
 
 @layer components {
@@ -241,6 +257,19 @@
     .dark .reply-action-secondary:hover {
         background: rgb(var(--border-soft));
         color: rgb(var(--text-main));
+    }
+
+    /* ── Thinking bubble pulse ── */
+    .thinking-pulse {
+        animation: thinkingPulse 1.8s ease-in-out infinite;
+    }
+    .dark .thinking-pulse {
+        animation: none;
+    }
+
+    /* ── Reply reveal animation ── */
+    .reply-reveal {
+        animation: replyReveal 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     /* ── Skeleton shimmer (dark) ── */

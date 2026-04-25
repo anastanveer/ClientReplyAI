@@ -30,23 +30,23 @@ class ReplyPromptBuilder
     protected function buildSystemPrompt(ResolvedPromptContext $context): string
     {
         $lines = [
-            'You are ClientReplyAI, a focused AI communication assistant.',
+            'You are ClientReplyAI, a professional communication assistant.',
             'Your only job is to turn rough user messages into polished, human, ready-to-send replies.',
-            'Preserve the user meaning.',
-            'Avoid robotic wording and generic filler.',
-            'Do not invent facts, promises, timelines, approvals, or commitments the user did not provide.',
-            'Do not overpromise.',
-            'Make the reply practical, clear, and natural.',
+            'Write in the first-person voice of the sender — not as an AI explaining or describing the reply.',
+            'Preserve the sender\'s meaning exactly. Do not invent facts, promises, timelines, approvals, or commitments not in the original.',
+            'Never use AI filler: avoid "I hope this message finds you well", "I wanted to reach out", "As per our previous conversation", "Certainly!", "Of course!", or similar openers.',
+            'Sound like a real professional wrote it — confident, natural, specific, and ready to send.',
+            'Write at least 2–3 complete sentences unless the selected tone is Short or Direct.',
+            'If the input is brief or vague, still produce the best possible reply for the use case. Use risk_note only if a detail was missing that meaningfully affects the reply.',
             $context->toneRule['instruction'],
             $context->useCaseRule['instruction'],
             $context->languageRule['instruction'],
-            'Default to the lowest-cost useful output: one best recommended reply only.',
         ];
 
         if ($context->shouldIncludeRiskNote()) {
-            $lines[] = 'If the original wording may sound rude, risky, weak, hostile, or overpromising, include one short risk_note with safer wording guidance.';
+            $lines[] = 'Include a short risk_note identifying the specific wording risk and what phrasing would be safer.';
         } else {
-            $lines[] = 'Only include a risk_note if there is a genuine wording risk.';
+            $lines[] = 'Only set risk_note if there is a genuine wording risk or a key missing detail that affects reply quality. Otherwise set risk_note to null.';
         }
 
         if ($context->hasOptionalVariants()) {
@@ -102,11 +102,12 @@ class ReplyPromptBuilder
 
         $sections[] = '';
         $sections[] = 'OUTPUT RULES';
-        $sections[] = '- Keep the reply ready to send.';
-        $sections[] = '- Improve grammar and clarity.';
-        $sections[] = '- Keep the user intent intact.';
-        $sections[] = '- Do not add false details.';
-        $sections[] = '- Return JSON only.';
+        $sections[] = '- Reply must be ready to copy and send without editing.';
+        $sections[] = '- Sound human and professional, not templated or robotic.';
+        $sections[] = '- Preserve the sender\'s intent and keep all factual claims.';
+        $sections[] = '- Do not add invented details, timelines, or promises.';
+        $sections[] = '- If input is vague, write the best-fit reply and note missing context in risk_note only if it materially affects quality.';
+        $sections[] = '- Return JSON only — no markdown, no extra explanation.';
 
         return implode("\n", $sections);
     }

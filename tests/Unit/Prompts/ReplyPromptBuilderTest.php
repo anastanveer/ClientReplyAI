@@ -26,7 +26,7 @@ class ReplyPromptBuilderTest extends TestCase
             'language' => 'broken_english_to_professional_english',
         ]);
 
-        $this->assertStringContainsString('one best recommended reply only', $prompt->systemPrompt);
+        $this->assertStringContainsString('first-person voice of the sender', $prompt->systemPrompt);
         $this->assertStringContainsString('Generate only the best recommended reply', $prompt->userPrompt);
         $this->assertSame([], $prompt->variants);
         $this->assertInstanceOf(\stdClass::class, $prompt->responseSchema['variants']);
@@ -66,7 +66,7 @@ class ReplyPromptBuilderTest extends TestCase
         ]);
 
         $this->assertNotEmpty($prompt->riskFlags);
-        $this->assertStringContainsString('include one short risk_note', $prompt->systemPrompt);
+        $this->assertStringContainsString('Include a short risk_note', $prompt->systemPrompt);
         $this->assertStringContainsString('Detected wording risks:', $prompt->userPrompt);
     }
 
@@ -77,7 +77,7 @@ class ReplyPromptBuilderTest extends TestCase
         ]);
 
         $this->assertStringContainsString('Return valid minified JSON', $prompt->systemPrompt);
-        $this->assertStringContainsString('Return JSON only.', $prompt->userPrompt);
+        $this->assertStringContainsString('Return JSON only', $prompt->userPrompt);
         $this->assertArrayHasKey('best_reply', $prompt->responseSchema);
         $this->assertArrayHasKey('risk_note', $prompt->responseSchema);
         $this->assertArrayHasKey('variants', $prompt->responseSchema);

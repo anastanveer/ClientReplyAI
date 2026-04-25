@@ -79,10 +79,14 @@
                 </div>
 
                 {{-- Loading state --}}
-                <div wire:loading wire:target="generateReply" class="assistant-bubble">
-                    <div class="flex items-center gap-3">
-                        <p class="text-sm font-semibold text-stone-900 dark:text-[rgb(var(--text-main))]">Generating your reply…</p>
-                        <span class="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-500 dark:bg-[rgb(var(--surface-muted))] dark:text-[rgb(var(--text-muted))]">Thinking</span>
+                <div wire:loading wire:target="generateReply" class="assistant-bubble thinking-pulse">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-stone-600 dark:text-[rgb(var(--text-muted))]">Thinking</span>
+                        <span class="flex items-end gap-0.5 pb-0.5">
+                            <span class="inline-block h-1 w-1 animate-bounce rounded-full bg-stone-400 [animation-delay:0ms]"></span>
+                            <span class="inline-block h-1 w-1 animate-bounce rounded-full bg-stone-400 [animation-delay:150ms]"></span>
+                            <span class="inline-block h-1 w-1 animate-bounce rounded-full bg-stone-400 [animation-delay:300ms]"></span>
+                        </span>
                     </div>
                     <div class="mt-4 space-y-3">
                         <div class="skeleton-line h-4 w-11/12"></div>
@@ -94,7 +98,7 @@
 
                 @if ($bestReply)
                     {{-- Reply result --}}
-                    <div class="assistant-bubble">
+                    <div class="assistant-bubble reply-reveal">
                         {{-- Header row: badges + quality --}}
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Best Reply</span>
@@ -108,8 +112,32 @@
                             </div>
                         </div>
 
-                        {{-- Reply text --}}
-                        <p class="mt-4 text-sm leading-7 text-stone-700 dark:text-[rgb(var(--text-main))]">{{ $bestReply }}</p>
+                        {{-- Reply text with typewriter --}}
+                        <p
+                            x-data="{
+                                target: @js($bestReply),
+                                shown: '',
+                                ver: 0,
+                                type() {
+                                    this.shown = '';
+                                    const v = ++this.ver;
+                                    let i = 0;
+                                    const delay = Math.max(3, Math.min(12, Math.floor(1800 / this.target.length)));
+                                    const tick = () => {
+                                        if (v !== this.ver) return;
+                                        this.shown += this.target[i++];
+                                        if (i < this.target.length) setTimeout(tick, delay);
+                                    };
+                                    if (this.target.length) tick();
+                                }
+                            }"
+                            x-init="
+                                type();
+                                $wire.$watch('bestReply', v => { if (v) { target = v; type(); } });
+                            "
+                            x-text="shown"
+                            class="mt-4 text-sm leading-7 text-stone-700 dark:text-[rgb(var(--text-main))]"
+                        ></p>
 
                         @if ($riskNote)
                             <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-300">
