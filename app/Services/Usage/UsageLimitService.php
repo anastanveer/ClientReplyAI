@@ -46,16 +46,20 @@ class UsageLimitService
 
     public function incrementRepliesGenerated(User $user): UsageLimit
     {
-        $record = UsageLimit::query()->firstOrCreate(
-            [
-                'user_id' => $user->id,
-                'usage_date' => $this->todayDateFor($user),
-            ],
-            [
-                'replies_generated' => 0,
-                'saved_replies_count' => 0,
-            ],
-        );
+        $record = $this->todayUsageRecord($user);
+
+        if ($record === null) {
+            try {
+                $record = UsageLimit::query()->create([
+                    'user_id'             => $user->id,
+                    'usage_date'          => $this->todayDateFor($user),
+                    'replies_generated'   => 0,
+                    'saved_replies_count' => 0,
+                ]);
+            } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+                $record = $this->todayUsageRecord($user);
+            }
+        }
 
         $record->increment('replies_generated');
 
