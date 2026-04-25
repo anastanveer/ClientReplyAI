@@ -63,4 +63,25 @@ class IntentDetectorTest extends TestCase
         $this->assertSame('payment_follow_up', $this->detector->detect('xyz abc def', 'payment_reminder'));
         $this->assertSame('general_professional', $this->detector->detect('xyz abc def', 'general_reply'));
     }
+
+    public function test_detects_casual_greeting_before_use_case_fallback(): void
+    {
+        // Pure greetings should never become payment reminders regardless of selected use case
+        $this->assertSame('casual_greeting', $this->detector->detect('hi', 'payment_reminder'));
+        $this->assertSame('casual_greeting', $this->detector->detect('hello', 'payment_reminder'));
+        $this->assertSame('casual_greeting', $this->detector->detect('hey', 'general_reply'));
+        $this->assertSame('casual_greeting', $this->detector->detect('hello my name is anas', 'payment_reminder'));
+        $this->assertSame('casual_greeting', $this->detector->detect('how are you', 'payment_reminder'));
+        $this->assertSame('casual_greeting', $this->detector->detect('test', 'payment_reminder'));
+        $this->assertSame('casual_greeting', $this->detector->detect('good morning', 'general_reply'));
+    }
+
+    public function test_does_not_classify_business_messages_as_casual(): void
+    {
+        // Business messages must not be treated as casual even if they start with greetings
+        // (more than 6 words with business content escapes the short-greeting filter)
+        $this->assertNotSame('casual_greeting', $this->detector->detect('xyz abc def', 'payment_reminder'));
+        $this->assertNotSame('casual_greeting', $this->detector->detect('client has not paid the invoice yet', 'general_reply'));
+        $this->assertNotSame('casual_greeting', $this->detector->detect('i need to follow up on my pending payment', 'payment_reminder'));
+    }
 }

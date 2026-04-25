@@ -79,6 +79,11 @@ class ReplyStrategyBuilder
 
         // Intent-based guidance
         switch ($intent) {
+            case 'casual_greeting':
+                $length = 'short (1–2 sentences)';
+                $notes[] = 'casual or simple message — respond naturally and briefly, no business framing';
+                break;
+
             case 'payment_follow_up':
                 $shouldBeFirm = true;
                 $addNextStep = true;

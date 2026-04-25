@@ -31,6 +31,17 @@ class ReplyPromptBuilder
             platform: $context->platform,
         );
 
+        // Casual / trivial inputs get a lightweight prompt — no business framing
+        if ($engineContext->intent === 'casual_greeting') {
+            return new BuiltPrompt(
+                systemPrompt: $this->buildCasualSystemPrompt($context),
+                userPrompt: $this->buildCasualUserPrompt($context),
+                variants: [],
+                riskFlags: [],
+                responseSchema: $this->responseSchema($context),
+            );
+        }
+
         return new BuiltPrompt(
             systemPrompt: $this->buildSystemPrompt($context),
             userPrompt: $this->buildUserPrompt($context, $engineContext),
@@ -38,6 +49,39 @@ class ReplyPromptBuilder
             riskFlags: $context->riskFlags,
             responseSchema: $this->responseSchema($context),
         );
+    }
+
+    protected function buildCasualSystemPrompt(ResolvedPromptContext $context): string
+    {
+        return implode("\n", [
+            'You are a friendly communication assistant.',
+            'The user has sent a simple, casual, or non-business message.',
+            '',
+            '## Instructions',
+            '- Reply naturally, briefly, and warmly — like a helpful person, not a corporate tool.',
+            '- Do NOT assume any business context (payment, complaint, negotiation, project, etc.).',
+            '- If it is a greeting, greet back simply.',
+            '- If it is a name introduction, acknowledge it warmly.',
+            '- If it is a wellbeing question, respond naturally.',
+            '- If it is a test message, confirm the system is working.',
+            '- Keep the reply to 1–2 short sentences. Never add business advice or templates.',
+            '',
+            $context->languageRule['instruction'],
+            '',
+            'Return valid minified JSON with exactly these keys: {"best_reply":"string","risk_note":null,"coach_note":null,"next_step":null,"variants":{}}.',
+        ]);
+    }
+
+    protected function buildCasualUserPrompt(ResolvedPromptContext $context): string
+    {
+        return implode("\n", [
+            '## Message',
+            $context->message,
+            '',
+            '## Task',
+            'Reply naturally and briefly. No business framing, no templates, no assumptions.',
+            'Return JSON only — no markdown, no explanation outside the JSON object.',
+        ]);
     }
 
     protected function buildSystemPrompt(ResolvedPromptContext $context): string
