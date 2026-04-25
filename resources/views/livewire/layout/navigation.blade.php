@@ -194,7 +194,7 @@ new class extends Component
         </div>
 
         {{-- Nav links --}}
-        <div class="space-y-0.5 px-2">
+        <div class="space-y-0.5 px-2" :class="!sb ? '!px-0' : ''">
 
             {{-- Reply Workspace --}}
             <a

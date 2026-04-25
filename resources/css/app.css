@@ -416,6 +416,9 @@
         outline: none;
         font-family: inherit;
         transition: background 0.15s;
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 140px;
     }
     .gpt-control-select:hover { background: rgba(0,0,0,0.08); }
     .dark .gpt-control-select {
