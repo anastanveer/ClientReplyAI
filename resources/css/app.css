@@ -142,11 +142,6 @@
         color: #ececec;
     }
 
-    .sidebar-collapsed .gpt-nav-link {
-        padding: 10px 0;
-        border-radius: 12px;
-    }
-
     .gpt-nav-link-active {
         background: rgba(0,0,0,0.06);
         color: rgb(var(--text-main));
