@@ -253,7 +253,9 @@
         width: 100%;
         background: transparent;
         border: none;
-        outline: none;
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-appearance: none;
         resize: none;
         font-size: 0.9375rem;
         line-height: 1.65;
@@ -263,6 +265,11 @@
         max-height: 200px;
         overflow-y: auto;
         padding: 0;
+    }
+    .gpt-textarea:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
     }
     .gpt-textarea::placeholder { color: rgb(var(--text-muted)); }
 

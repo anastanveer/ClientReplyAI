@@ -218,9 +218,9 @@
             @enderror
 
             <div class="gpt-composer-pill">
-                {{-- Auto-growing textarea --}}
+                {{-- Auto-growing textarea — defer sync to avoid typing lag --}}
                 <textarea
-                    wire:model.live.debounce.250ms="composer"
+                    wire:model.defer="composer"
                     x-data
                     x-init="
                         const el = $el;
@@ -229,7 +229,7 @@
                         el.addEventListener('input', resize);
                     "
                     style="min-height: 26px;"
-                    class="gpt-textarea"
+                    class="gpt-textarea focus:outline-none focus:ring-0"
                     placeholder="Paste your message…"
                     @keydown.enter.prevent="if (!$event.shiftKey) $el.closest('form').requestSubmit()"
                 ></textarea>
