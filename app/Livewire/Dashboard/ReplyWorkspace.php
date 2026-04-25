@@ -59,6 +59,8 @@ class ReplyWorkspace extends Component
      */
     public array $messages = [];
 
+    public bool $welcomeHidden = false;
+
     public ?string $providerStatus = null;
 
     public ?string $errorMessage = null;
@@ -140,6 +142,7 @@ class ReplyWorkspace extends Component
         $this->language = $language ?: $this->language;
 
         $this->resetGenerationFeedback();
+        $this->welcomeHidden = true;
     }
 
     public function applyTemplate(int $id): void
@@ -432,6 +435,7 @@ class ReplyWorkspace extends Component
         $this->lastSubmittedMessage = null;
         $this->messages = [];
         $this->currentChatId = null;
+        $this->welcomeHidden = false;
     }
 
     protected function estimateQualityScore(string $reply, ?string $riskNote): int

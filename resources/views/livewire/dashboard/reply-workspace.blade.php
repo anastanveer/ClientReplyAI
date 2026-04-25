@@ -39,7 +39,7 @@
         "
     >
 
-        @if (empty($messages))
+        @if (empty($messages) && !$welcomeHidden)
 
             {{-- ── Empty / welcome state ── --}}
             <div
