@@ -4,7 +4,12 @@
     x-on:chat-selected.window="$wire.loadChat($event.detail.id)"
     x-on:chat-deleted.window="if ($event.detail.id === $wire.currentChatId) $wire.clearWorkspace()"
 >
-    {{-- ── Floating top row: mode tabs + usage (no bar, no border) ── --}}
+    {{-- ── Floating top row: mode tabs + usage ── --}}
+    @php
+        $usagePct   = ($dailyLimit && $dailyLimit > 0) ? min(($dailyUsage / $dailyLimit) * 100, 100) : 0;
+        $barColor   = $usagePct >= 90 ? '#f43f5e' : ($usagePct >= 70 ? '#f59e0b' : '#10b981');
+        $nearLimit  = $dailyLimit !== null && $dailyRemaining !== null && $dailyRemaining <= 2 && $dailyRemaining > 0;
+    @endphp
     <div class="flex shrink-0 items-center justify-between gap-3 px-4 pt-3 pb-1 sm:px-6">
         <div class="inline-flex items-center gap-0.5 rounded-xl bg-stone-100/80 px-1.5 py-1 dark:bg-white/5">
             <button
@@ -20,14 +25,31 @@
                 class="rounded-lg px-2.5 py-1 text-xs font-semibold transition"
             >Advanced</button>
         </div>
-        <p class="text-xs text-stone-400 dark:text-[#a1a1aa]">
-            @if ($dailyLimit !== null)
-                <span class="font-semibold text-stone-600 dark:text-[#ececec]">{{ $dailyUsage }}</span> / {{ $dailyLimit }} today
-            @else
-                <span class="font-semibold dark:text-[#a1a1aa]">Unlimited</span>
-            @endif
-        </p>
+
+        {{-- Usage counter + bar --}}
+        @if ($dailyLimit !== null)
+            <div class="flex flex-col items-end gap-1">
+                <span class="text-xs text-stone-500 dark:text-[#71717a]">
+                    <span class="font-semibold text-stone-700 dark:text-[#d4d4d8]">{{ $dailyUsage }}</span> / {{ $dailyLimit }} replies
+                </span>
+                <div class="h-1 w-20 overflow-hidden rounded-full bg-stone-200 dark:bg-white/10">
+                    <div class="h-full rounded-full transition-all duration-500" style="width:{{ $usagePct }}%; background:{{ $barColor }}"></div>
+                </div>
+            </div>
+        @else
+            <span class="text-xs font-medium text-stone-400 dark:text-[#71717a]">Unlimited</span>
+        @endif
     </div>
+
+    {{-- Soft warning when close to limit --}}
+    @if ($nearLimit)
+        <div class="mx-4 mt-1 flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/30 dark:bg-amber-900/15 sm:mx-6">
+            <p class="text-xs text-amber-700 dark:text-amber-400">
+                <span class="font-semibold">{{ $dailyRemaining }} {{ $dailyRemaining === 1 ? 'reply' : 'replies' }} left</span> today — upgrade for unlimited
+            </p>
+            <a href="{{ route('pricing') }}" wire:navigate class="text-xs font-semibold text-amber-700 underline underline-offset-2 dark:text-amber-400">Upgrade →</a>
+        </div>
+    @endif
 
     {{-- ── Scrollable messages area ── --}}
     <div
@@ -316,9 +338,22 @@
         </div>
 
         @if ($dailyLimit !== null && $dailyRemaining === 0)
-            <p class="mx-auto mb-2 max-w-3xl text-center text-xs text-amber-600 dark:text-amber-400">
-                Daily limit reached. Come back tomorrow or upgrade.
-            </p>
+            <div class="mx-auto mb-3 max-w-3xl rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 dark:border-rose-800/50 dark:bg-rose-950/30">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900/50">
+                            <svg class="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                        </span>
+                        <div>
+                            <p class="text-xs font-semibold text-rose-700 dark:text-rose-400">Daily limit reached</p>
+                            <p class="text-xs text-rose-600/80 dark:text-rose-500">You've used all {{ $dailyLimit }} free replies today. Come back tomorrow or upgrade for unlimited.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('pricing') }}" wire:navigate class="shrink-0 rounded-xl bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600">
+                        Upgrade →
+                    </a>
+                </div>
+            </div>
         @endif
 
         {{-- Pill input --}}

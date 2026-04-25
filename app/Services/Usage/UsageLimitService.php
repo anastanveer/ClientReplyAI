@@ -11,7 +11,7 @@ class UsageLimitService
 {
     public function freeReplyLimit(): int
     {
-        return 5;
+        return 10;
     }
 
     public function currentReplyUsage(User $user): int

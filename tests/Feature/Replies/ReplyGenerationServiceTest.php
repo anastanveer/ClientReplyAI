@@ -67,7 +67,7 @@ class ReplyGenerationServiceTest extends TestCase
 
         $user->usageLimits()->create([
             'usage_date' => now('UTC')->toDateString(),
-            'replies_generated' => 5,
+            'replies_generated' => 10,
             'saved_replies_count' => 0,
         ]);
 

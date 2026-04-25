@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="ClientReplyAI pricing — free plan with 5 replies per day, Pro plan for unlimited AI replies, advanced mode, and full history. No credit card required.">
+    <meta name="description" content="ClientReplyAI pricing — free plan with 10 replies per day, Pro plan for unlimited AI replies, advanced mode, and full history. No credit card required.">
     <title>Pricing | ClientReplyAI — AI Reply Generator</title>
 
     <!-- PWA manifest -->
@@ -61,7 +61,7 @@
                 <ul class="mt-8 space-y-3 text-sm text-stone-600">
                     <li class="flex items-center gap-2.5">
                         <svg class="h-4 w-4 shrink-0 text-green-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                        5 AI replies per day
+                        10 AI replies per day
                     </li>
                     <li class="flex items-center gap-2.5">
                         <svg class="h-4 w-4 shrink-0 text-green-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
