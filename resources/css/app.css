@@ -571,6 +571,55 @@
         color: #ececec;
     }
 
+    /* Welcome screen quick-select cards */
+    .quick-chip {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 12px 16px;
+        border-radius: 16px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        line-height: 1.35;
+        border: 1px solid rgba(0,0,0,0.08);
+        background: rgba(255,255,255,0.85);
+        color: #374151;
+        transition: all 0.15s;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .quick-chip:hover {
+        background: #fff;
+        border-color: rgba(0,0,0,0.15);
+        color: #111827;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-1px);
+    }
+    .dark .quick-chip {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.1);
+        color: #d4d4d8;
+        box-shadow: none;
+    }
+    .dark .quick-chip:hover {
+        background: rgba(255,255,255,0.09);
+        border-color: rgba(255,255,255,0.18);
+        color: #ececec;
+        transform: translateY(-1px);
+    }
+    .quick-chip-more {
+        color: #6b7280;
+        font-style: italic;
+    }
+    .dark .quick-chip-more {
+        color: #71717a;
+    }
+    .dark .quick-chip-more:hover {
+        color: #a1a1aa;
+    }
+
     .selector-shell {
         @apply rounded-2xl border border-stone-200 bg-white/90 px-3 py-2.5 text-sm font-medium text-stone-700 shadow-sm outline-none transition focus:border-stone-400 focus:ring-4 focus:ring-stone-200/60;
     }

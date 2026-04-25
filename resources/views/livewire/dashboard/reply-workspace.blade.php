@@ -42,26 +42,34 @@
         @if (empty($messages))
 
             {{-- ── Empty / welcome state ── --}}
-            <div class="flex min-h-full flex-col items-center justify-center px-4 py-16">
-                <div class="w-full max-w-2xl text-center">
-                    <h2 class="text-[1.75rem] font-semibold leading-tight text-stone-800 dark:text-[#ececec] sm:text-4xl">
-                        What do you want to reply to today?
+            <div class="flex min-h-full flex-col items-center justify-center px-4 py-12">
+                <div class="w-full max-w-xl text-center">
+
+                    {{-- Icon badge --}}
+                    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-stone-900 shadow-lg dark:bg-white/10">
+                        <svg class="h-7 w-7 text-white dark:text-[#ececec]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                        </svg>
+                    </div>
+
+                    <h2 class="text-2xl font-bold leading-tight text-stone-900 dark:text-[#ececec] sm:text-3xl">
+                        What do you want to reply to?
                     </h2>
-                    <p class="mt-3 text-[0.9375rem] text-stone-500 dark:text-[#a1a1aa]">
-                        Paste any rough message — get a polished, ready-to-send reply in seconds.
+                    <p class="mt-2.5 text-sm text-stone-500 dark:text-[#71717a]">
+                        Paste a message below — get a polished reply in seconds.
                     </p>
 
                     @if ($quickTemplates->count())
-                        <div class="mt-8 flex flex-wrap justify-center gap-2">
+                        <div class="mt-7 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                             @foreach ($quickTemplates as $template)
                                 <button
                                     type="button"
-                                    class="chip"
+                                    class="quick-chip"
                                     wire:click="applyTemplate({{ $template->id }})"
                                     title="{{ $template->prompt_hint }}"
                                 >{{ $template->name }}</button>
                             @endforeach
-                            <a href="{{ route('templates') }}" wire:navigate class="chip">Browse all →</a>
+                            <a href="{{ route('templates') }}" wire:navigate class="quick-chip quick-chip-more">Browse all →</a>
                         </div>
                     @endif
 
