@@ -53,7 +53,7 @@
 
     {{-- ── Scrollable messages area ── --}}
     <div
-        class="flex-1 overflow-y-auto"
+        class="flex flex-1 flex-col overflow-y-auto"
         x-data
         x-init="
             $nextTick(() => { $el.scrollTop = $el.scrollHeight; });
@@ -63,14 +63,14 @@
 
         @if (empty($messages) && !$welcomeHidden)
 
-            {{-- ── Empty / welcome state ── --}}
+            {{-- ── Empty / welcome state — vertically centered ── --}}
             <div
                 x-data="{ visible: true }"
                 x-show="visible"
                 x-transition:leave="transition duration-200 ease-in"
                 x-transition:leave-start="opacity-100 translate-y-0"
                 x-transition:leave-end="opacity-0 -translate-y-4"
-                class="flex min-h-full flex-col items-center justify-center px-4 py-12"
+                class="flex flex-1 flex-col items-center justify-center px-4 py-12"
             >
                 <div class="w-full max-w-xl text-center">
 
@@ -113,8 +113,8 @@
 
         @else
 
-            {{-- ── Conversation thread ── --}}
-            <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6" x-data>
+            {{-- ── Conversation thread — starts from top, grows down ── --}}
+            <div class="mx-auto w-full max-w-3xl px-4 pt-6 pb-4 sm:px-6" x-data>
 
                 @if ($errorMessage)
                     <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-800/40 dark:bg-rose-900/20 dark:text-rose-300">
