@@ -159,21 +159,18 @@ new class extends Component
                     <path d="M9 3v18"/>
                 </svg>
             </button>
-            {{-- Brand name + new reply button (hidden when collapsed) --}}
-            <template x-if="sb">
-                <div class="flex flex-1 items-center justify-between">
-                    <a href="{{ route('dashboard') }}" class="sidebar-logo" wire:navigate>
-                        <div class="min-w-0">
-                            <div class="truncate text-sm font-semibold text-stone-900 dark:text-[rgb(var(--text-main))]">ClientReplyAI</div>
-                        </div>
-                    </a>
-                    <a href="{{ route('dashboard') }}" class="gpt-icon-btn" title="New Reply" wire:navigate>
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                    </a>
+            {{-- Brand name (hidden when collapsed) --}}
+            <a x-show="sb" x-cloak href="{{ route('dashboard') }}" class="sidebar-logo flex-1" wire:navigate>
+                <div class="min-w-0">
+                    <div class="truncate text-sm font-semibold text-stone-900 dark:text-[rgb(var(--text-main))]">ClientReplyAI</div>
                 </div>
-            </template>
+            </a>
+            {{-- New reply icon (expanded only) --}}
+            <a x-show="sb" x-cloak href="{{ route('dashboard') }}" class="gpt-icon-btn" title="New Reply" wire:navigate>
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+            </a>
         </div>
 
         {{-- New Reply button --}}
