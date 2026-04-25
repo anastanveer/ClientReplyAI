@@ -168,6 +168,16 @@ new class extends Component
             </a>
         </div>
 
+        {{-- Search --}}
+        <div class="px-3 pb-2">
+            <div class="flex items-center gap-2 rounded-xl px-3 py-2" style="background: rgba(0,0,0,0.05);">
+                <svg class="h-3.5 w-3.5 shrink-0 text-stone-400 dark:text-[#a1a1aa]" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 3.473 9.764l3.631 3.632a1 1 0 0 0 1.414-1.414l-3.632-3.631A5.5 5.5 0 0 0 9 3.5Zm-3.5 5.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z" clip-rule="evenodd"/>
+                </svg>
+                <input type="text" placeholder="Search chats" class="gpt-search-input" />
+            </div>
+        </div>
+
         {{-- Nav links --}}
         <div class="space-y-0.5 px-3">
 

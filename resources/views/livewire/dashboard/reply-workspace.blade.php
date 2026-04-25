@@ -2,46 +2,19 @@
     x-data="{ mode: $wire.entangle('mode'), advancedOpen: $wire.entangle('advancedOpen') }"
     class="conversation-pane"
 >
-    {{-- ── Top bar ── --}}
-    <div class="flex shrink-0 items-center justify-between gap-3 border-b border-stone-200/80 px-4 py-3 dark:border-[rgb(var(--border-soft))] sm:px-6">
-        <div class="flex items-center gap-2">
-            <div class="inline-flex items-center gap-1 rounded-2xl border border-stone-200/80 bg-stone-100/60 px-1.5 py-1.5 dark:border-[rgb(var(--border-soft))] dark:bg-[rgb(var(--surface-muted))]">
-                <button
-                    type="button"
-                    @click="mode = 'quick'; advancedOpen = false"
-                    :class="mode === 'quick' ? 'mode-tab-active' : 'mode-tab-inactive'"
-                    class="rounded-xl px-3 py-1 text-xs font-semibold transition"
-                >Quick</button>
-                <button
-                    type="button"
-                    @click="mode = 'advanced'; advancedOpen = true"
-                    :class="mode === 'advanced' ? 'mode-tab-active' : 'mode-tab-inactive'"
-                    class="rounded-xl px-3 py-1 text-xs font-semibold transition"
-                >Advanced</button>
-            </div>
-        </div>
-
-        <p class="text-xs text-stone-500 dark:text-[rgb(var(--text-muted))]">
-            @if ($dailyLimit !== null)
-                <span class="font-semibold text-stone-700 dark:text-[rgb(var(--text-main))]">{{ $dailyUsage }}</span> / {{ $dailyLimit }} today
-            @else
-                <span class="font-semibold text-stone-600 dark:text-[rgb(var(--text-main))]">Unlimited</span>
-            @endif
-        </p>
-    </div>
-
-    {{-- ── Messages area (scrollable) ── --}}
+    {{-- ── Scrollable messages area ── --}}
     <div class="flex-1 overflow-y-auto">
 
         @if (!$lastSubmittedMessage)
-            {{-- ── Empty state: centered greeting ── --}}
+
+            {{-- ── Empty / welcome state ── --}}
             <div class="flex min-h-full flex-col items-center justify-center px-4 py-16">
-                <div class="w-full max-w-xl text-center">
-                    <h2 class="text-2xl font-semibold text-stone-800 dark:text-[rgb(var(--text-main))] sm:text-3xl">
+                <div class="w-full max-w-2xl text-center">
+                    <h2 class="text-[1.75rem] font-semibold leading-tight text-stone-800 dark:text-[#ececec] sm:text-4xl">
                         What do you want to reply to today?
                     </h2>
-                    <p class="mt-2 text-sm text-stone-500 dark:text-[rgb(var(--text-muted))]">
-                        Paste any rough message below and get a polished, ready-to-send reply.
+                    <p class="mt-3 text-[0.9375rem] text-stone-500 dark:text-[#a1a1aa]">
+                        Paste any rough message — get a polished, ready-to-send reply in seconds.
                     </p>
 
                     @if ($quickTemplates->count())
@@ -67,53 +40,43 @@
             </div>
 
         @else
+
             {{-- ── Chat messages ── --}}
             <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6">
 
                 @if ($errorMessage)
-                    <div class="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-800/40 dark:bg-rose-900/20 dark:text-rose-300">
+                    <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-800/40 dark:bg-rose-900/20 dark:text-rose-300">
                         {{ $errorMessage }}
                     </div>
                 @endif
 
-                {{-- User bubble --}}
-                <div class="user-bubble mb-5">
-                    <p class="text-sm leading-7">{{ $lastSubmittedMessage }}</p>
+                {{-- User message (right-aligned) --}}
+                <div class="mb-6 flex justify-end">
+                    <div class="user-bubble">
+                        {{ $lastSubmittedMessage }}
+                    </div>
                 </div>
 
-                {{-- Loading state --}}
-                <div wire:loading wire:target="generateReply" class="assistant-bubble thinking-pulse mb-5">
+                {{-- Loading / thinking state --}}
+                <div wire:loading wire:target="generateReply" class="mb-6">
                     <div class="flex items-center gap-2">
-                        <span class="text-sm font-medium text-stone-600 dark:text-[rgb(var(--text-muted))]">Thinking</span>
-                        <span class="flex items-end gap-0.5 pb-0.5">
-                            <span class="inline-block h-1 w-1 animate-bounce rounded-full bg-stone-400 [animation-delay:0ms]"></span>
-                            <span class="inline-block h-1 w-1 animate-bounce rounded-full bg-stone-400 [animation-delay:150ms]"></span>
-                            <span class="inline-block h-1 w-1 animate-bounce rounded-full bg-stone-400 [animation-delay:300ms]"></span>
+                        <span class="text-sm text-stone-400 dark:text-[#a1a1aa]">Thinking</span>
+                        <span class="thinking-dots flex items-end gap-0.5 pb-0.5">
+                            <span class="inline-block h-1 w-1 rounded-full bg-stone-400 dark:bg-[#a1a1aa]"></span>
+                            <span class="inline-block h-1 w-1 rounded-full bg-stone-400 dark:bg-[#a1a1aa]"></span>
+                            <span class="inline-block h-1 w-1 rounded-full bg-stone-400 dark:bg-[#a1a1aa]"></span>
                         </span>
                     </div>
-                    <div class="mt-4 space-y-3">
-                        <div class="skeleton-line h-4 w-11/12"></div>
-                        <div class="skeleton-line h-4 w-full"></div>
-                        <div class="skeleton-line h-4 w-10/12"></div>
-                        <div class="skeleton-line h-4 w-7/12"></div>
+                    <div class="mt-4 space-y-2.5">
+                        <div class="skeleton-line h-3.5 w-11/12"></div>
+                        <div class="skeleton-line h-3.5 w-full"></div>
+                        <div class="skeleton-line h-3.5 w-9/12"></div>
                     </div>
                 </div>
 
                 @if ($bestReply)
-                    {{-- Reply result --}}
-                    <div class="assistant-bubble reply-reveal">
-                        {{-- Header: badges + quality --}}
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Best Reply</span>
-                            <span class="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-600 dark:bg-[rgb(var(--surface-muted))] dark:text-[rgb(var(--text-muted))]">{{ $tone }}</span>
-                            <span class="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-600 dark:bg-[rgb(var(--surface-muted))] dark:text-[rgb(var(--text-muted))]">{{ $useCase }}</span>
-                            <div class="ml-auto flex items-center gap-2">
-                                <div class="h-1.5 w-16 overflow-hidden rounded-full bg-stone-200 dark:bg-[rgb(var(--border-soft))]">
-                                    <div class="h-full rounded-full bg-emerald-500" style="width: {{ $qualityScore }}%"></div>
-                                </div>
-                                <span class="text-xs font-semibold text-stone-500 dark:text-[rgb(var(--text-muted))]">{{ $qualityScore }}%</span>
-                            </div>
-                        </div>
+                    {{-- AI response ── --}}
+                    <div class="reply-reveal mb-6">
 
                         {{-- Reply text with typewriter --}}
                         <p
@@ -139,7 +102,7 @@
                                 $wire.$watch('bestReply', v => { if (v) { target = v; type(); } });
                             "
                             x-text="shown"
-                            class="mt-4 text-sm leading-7 text-stone-700 dark:text-[rgb(var(--text-main))]"
+                            class="text-[0.9375rem] leading-8 text-stone-700 dark:text-[#ececec]"
                         ></p>
 
                         @if ($riskNote)
@@ -148,35 +111,44 @@
                             </div>
                         @endif
 
-                        {{-- Actions --}}
-                        <div class="mt-5 flex flex-wrap items-center gap-2">
+                        {{-- Small meta row --}}
+                        <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-stone-400 dark:text-[#a1a1aa]">
+                            <span>{{ $tone }}</span>
+                            <span>·</span>
+                            <span>{{ $useCase }}</span>
+                            <span>·</span>
+                            <span>{{ $qualityScore }}% quality</span>
+                        </div>
+
+                        {{-- Action row --}}
+                        <div class="mt-3 flex flex-wrap items-center gap-1">
                             <button
                                 type="button"
-                                class="reply-action-pill reply-action-primary"
+                                class="gpt-action-btn"
                                 x-data="{ copied: false, text: @js($bestReply) }"
                                 @click="navigator.clipboard.writeText(text); copied = true; setTimeout(() => copied = false, 2000)"
-                                x-text="copied ? 'Copied!' : 'Copy'"
+                                x-text="copied ? '✓ Copied' : 'Copy'"
                             >Copy</button>
 
                             @if ($savedReplyId)
-                                <span class="reply-action-pill reply-action-secondary cursor-default opacity-60">Saved ✓</span>
+                                <span class="gpt-action-btn opacity-50 cursor-default">Saved ✓</span>
                             @else
-                                <button type="button" class="reply-action-pill reply-action-secondary" wire:click="saveReply" wire:loading.attr="disabled" wire:target="saveReply">
+                                <button type="button" class="gpt-action-btn" wire:click="saveReply" wire:loading.attr="disabled" wire:target="saveReply">
                                     <span wire:loading.remove wire:target="saveReply">Save</span>
                                     <span wire:loading wire:target="saveReply">Saving…</span>
                                 </button>
                             @endif
 
-                            <button type="button" class="reply-action-pill reply-action-secondary" wire:click="generateReply">Regenerate</button>
+                            <button type="button" class="gpt-action-btn" wire:click="generateReply">Regenerate</button>
 
                             @if ($savedReplyId)
-                                <a href="{{ route('saved-replies') }}" wire:navigate class="ml-auto text-xs text-blue-600 hover:underline dark:text-blue-400">View saved →</a>
+                                <a href="{{ route('saved-replies') }}" wire:navigate class="ml-3 text-xs text-stone-400 hover:underline dark:text-[#a1a1aa]">View saved →</a>
+                            @endif
+
+                            @if ($providerStatus)
+                                <span class="ml-auto text-xs text-stone-400 dark:text-[#a1a1aa]">{{ $providerStatus }}</span>
                             @endif
                         </div>
-
-                        @if ($providerStatus)
-                            <p class="mt-3 text-xs text-stone-400 dark:text-[rgb(var(--text-muted))]">{{ $providerStatus }}</p>
-                        @endif
                     </div>
                 @endif
 
@@ -185,87 +157,118 @@
 
     </div>
 
-    {{-- ── Composer (bottom) ── --}}
-    <div class="composer-wrapper shrink-0">
-        <form wire:submit="generateReply" class="composer-form">
-            <textarea
-                wire:model.live.debounce.250ms="composer"
-                rows="4"
-                class="min-h-[100px] w-full resize-none border-0 bg-transparent p-0 text-sm leading-7 text-stone-700 outline-none ring-0 placeholder:text-stone-400 dark:text-[rgb(var(--text-main))] dark:placeholder:text-[rgb(var(--text-muted))]"
-                placeholder="Paste the rough message you want help replying to..."
-            ></textarea>
+    {{-- ── Composer ── --}}
+    <div class="gpt-composer shrink-0">
 
+        {{-- Advanced panel (collapsible) --}}
+        <div x-cloak x-show="advancedOpen" x-transition class="advanced-options-panel mx-auto mb-3 grid max-w-3xl gap-3 lg:grid-cols-2">
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-[#a1a1aa]">Context</label>
+                <textarea wire:model.live.debounce.250ms="context" rows="3" class="selector-shell min-h-[70px] w-full resize-none" placeholder="Project context, relationship history..."></textarea>
+            </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-[#a1a1aa]">Goal</label>
+                <textarea wire:model.live.debounce.250ms="goal" rows="3" class="selector-shell min-h-[70px] w-full resize-none" placeholder="What should the reply achieve?"></textarea>
+            </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-[#a1a1aa]">Receiver</label>
+                <input wire:model.live.debounce.250ms="receiver" type="text" class="selector-shell w-full" placeholder="Client, recruiter, buyer..." />
+            </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-[#a1a1aa]">Platform</label>
+                <input wire:model.live.debounce.250ms="platform" type="text" class="selector-shell w-full" placeholder="Email, WhatsApp, Fiverr..." />
+            </div>
+        </div>
+
+        @if ($dailyLimit !== null && $dailyRemaining === 0)
+            <p class="mx-auto mb-2 max-w-3xl text-center text-xs text-amber-600 dark:text-amber-400">
+                Daily limit reached. Come back tomorrow or upgrade.
+            </p>
+        @endif
+
+        {{-- Pill input --}}
+        <form wire:submit="generateReply" class="mx-auto max-w-3xl">
             @error('composer')
-                <p class="text-sm text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                <p class="mb-2 text-center text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
             @enderror
 
-            @if ($dailyLimit !== null && $dailyRemaining === 0)
-                <p class="text-sm text-amber-700 dark:text-amber-400">
-                    You've used all {{ $dailyLimit }} free replies today. Come back tomorrow or upgrade for more.
-                </p>
-            @endif
+            <div class="gpt-composer-pill">
+                {{-- Auto-growing textarea --}}
+                <textarea
+                    wire:model.live.debounce.250ms="composer"
+                    x-data
+                    x-init="
+                        const el = $el;
+                        const resize = () => { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; };
+                        resize();
+                        el.addEventListener('input', resize);
+                    "
+                    style="min-height: 26px;"
+                    class="gpt-textarea"
+                    placeholder="Paste your message…"
+                    @keydown.enter.prevent="if (!$event.shiftKey) $el.closest('form').requestSubmit()"
+                ></textarea>
 
-            <div class="flex flex-wrap items-center gap-2">
-                <select wire:model.live="tone" class="selector-shell">
-                    @foreach ($toneOptions as $option)
-                        <option value="{{ $option }}">{{ $option }}</option>
-                    @endforeach
-                </select>
+                {{-- Bottom toolbar --}}
+                <div class="gpt-pill-toolbar">
+                    {{-- Controls --}}
+                    <select wire:model.live="tone" class="gpt-control-select">
+                        @foreach ($toneOptions as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
+                    </select>
 
-                <select wire:model.live="useCase" class="selector-shell">
-                    @foreach ($useCaseOptions as $option)
-                        <option value="{{ $option }}">{{ $option }}</option>
-                    @endforeach
-                </select>
+                    <select wire:model.live="useCase" class="gpt-control-select">
+                        @foreach ($useCaseOptions as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
+                    </select>
 
-                <select wire:model.live="language" class="selector-shell">
-                    @foreach ($languageOptions as $option)
-                        <option value="{{ $option }}">{{ $option }}</option>
-                    @endforeach
-                </select>
+                    <select wire:model.live="language" class="gpt-control-select hidden sm:block">
+                        @foreach ($languageOptions as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
+                    </select>
 
-                <button
-                    type="button"
-                    class="action-pill"
-                    @click="advancedOpen = !advancedOpen; if (advancedOpen) mode = 'advanced'; else mode = 'quick'"
-                    :class="advancedOpen ? 'border-stone-300 text-stone-950 dark:border-[rgb(var(--text-muted))] dark:text-[rgb(var(--text-main))]' : ''"
-                >Advanced options</button>
-            </div>
+                    <button
+                        type="button"
+                        class="gpt-control-btn"
+                        @click="advancedOpen = !advancedOpen; if (advancedOpen) mode = 'advanced'; else mode = 'quick'"
+                        :class="advancedOpen ? 'bg-stone-200/70 dark:bg-white/10' : ''"
+                    >
+                        <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                        </svg>
+                        More
+                    </button>
 
-            <div x-cloak x-show="advancedOpen" x-transition class="advanced-options-panel grid gap-3 lg:grid-cols-2">
-                <div>
-                    <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-[rgb(var(--text-muted))]">Context</label>
-                    <textarea wire:model.live.debounce.250ms="context" rows="3" class="selector-shell min-h-[80px] w-full resize-none" placeholder="Project context, relationship history, constraints..."></textarea>
+                    {{-- Send button --}}
+                    <button
+                        type="submit"
+                        @disabled($dailyLimit !== null && $dailyRemaining === 0)
+                        wire:loading.attr="disabled"
+                        wire:target="generateReply"
+                        class="gpt-send-btn"
+                        title="Generate reply (Enter)"
+                    >
+                        <span wire:loading.remove wire:target="generateReply">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                            </svg>
+                        </span>
+                        <span wire:loading wire:target="generateReply">
+                            <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 3v3m0 12v3M3 12h3m12 0h3" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                    </button>
                 </div>
-                <div>
-                    <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-[rgb(var(--text-muted))]">Goal</label>
-                    <textarea wire:model.live.debounce.250ms="goal" rows="3" class="selector-shell min-h-[80px] w-full resize-none" placeholder="What should the reply achieve?"></textarea>
-                </div>
-                <div>
-                    <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-[rgb(var(--text-muted))]">Receiver</label>
-                    <input wire:model.live.debounce.250ms="receiver" type="text" class="selector-shell w-full" placeholder="Client, recruiter, buyer..." />
-                </div>
-                <div>
-                    <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-[rgb(var(--text-muted))]">Platform</label>
-                    <input wire:model.live.debounce.250ms="platform" type="text" class="selector-shell w-full" placeholder="Email, WhatsApp, Fiverr, LinkedIn..." />
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between gap-3 border-t border-stone-200/80 pt-3 dark:border-[rgb(var(--border-soft))]">
-                <p class="text-xs text-stone-400 dark:text-[rgb(var(--text-muted))]">Best reply · Low cost · Gemini</p>
-
-                <button
-                    type="submit"
-                    @disabled($dailyLimit !== null && $dailyRemaining === 0)
-                    wire:loading.attr="disabled"
-                    wire:target="generateReply"
-                    class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(15,23,42,0.18)] transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[rgb(var(--brand))] dark:shadow-none dark:hover:opacity-90"
-                >
-                    <span wire:loading.remove wire:target="generateReply">Generate Reply</span>
-                    <span wire:loading wire:target="generateReply">Generating…</span>
-                </button>
             </div>
         </form>
+
+        <p class="mt-2 text-center text-xs text-stone-400 dark:text-[#a1a1aa]">
+            Best reply only · Low cost · Gemini
+        </p>
     </div>
 
 </div>

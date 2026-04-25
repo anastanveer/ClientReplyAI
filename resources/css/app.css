@@ -19,20 +19,20 @@
         --sidebar-bg: 248 246 240;
     }
 
-    /* ── Dark mode variables ── */
+    /* ── Dark mode variables — ChatGPT palette ── */
     .dark {
         color-scheme: dark;
-        --page-bg: 13 13 13;
-        --surface: 26 26 26;
-        --surface-muted: 38 38 38;
+        --page-bg: 33 33 33;        /* #212121 */
+        --surface: 23 23 23;        /* #171717 sidebar */
+        --surface-muted: 47 47 47;  /* #2f2f2f composer/cards */
         --surface-strong: 236 236 236;
-        --border-soft: 52 52 52;
-        --text-main: 230 230 230;
-        --text-muted: 140 140 140;
+        --border-soft: 56 56 56;    /* #383838 */
+        --text-main: 236 236 236;   /* #ececec */
+        --text-muted: 161 161 170;  /* #a1a1aa */
         --brand: 129 140 248;
         --brand-soft: 49 46 129;
         --success: 74 222 128;
-        --sidebar-bg: 23 23 23;
+        --sidebar-bg: 23 23 23;     /* #171717 */
     }
 
     html {
@@ -44,15 +44,14 @@
         @apply min-h-screen bg-[rgb(var(--page-bg))] text-[rgb(var(--text-main))] antialiased;
         font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
         background-image:
-            radial-gradient(circle at top left, rgba(25, 91, 255, 0.12), transparent 32%),
-            radial-gradient(circle at top right, rgba(15, 23, 42, 0.08), transparent 22%),
-            linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(244, 241, 233, 0.95));
+            radial-gradient(circle at top left, rgba(25, 91, 255, 0.10), transparent 32%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.50), rgba(244, 241, 233, 0.95));
         background-attachment: fixed;
     }
 
     .dark body {
         background-image: none;
-        background-color: rgb(var(--page-bg));
+        background-color: #212121;
     }
 
     ::selection {
@@ -63,66 +62,26 @@
         display: none !important;
     }
 
-    /* PWA safe area */
-    .app-shell {
-        padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
-
     @keyframes shimmer {
-        0% { background-position: 200% 0; }
+        0%   { background-position: 200% 0; }
         100% { background-position: -200% 0; }
     }
 
     @keyframes thinkingPulse {
-        0%, 100% {
-            box-shadow: 0 14px 32px rgba(15,23,42,0.06), 0 0 0 0 rgba(59,130,246,0);
-            border-color: rgba(217,211,199,0.8);
-        }
-        50% {
-            box-shadow: 0 14px 32px rgba(15,23,42,0.06), 0 0 0 5px rgba(59,130,246,0.07);
-            border-color: rgba(59,130,246,0.22);
-        }
+        0%, 100% { opacity: 1; }
+        50%      { opacity: 0.4; }
     }
 
     @keyframes replyReveal {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(8px); }
         to   { opacity: 1; transform: translateY(0); }
     }
 }
 
 @layer components {
-    /* ── App shell (legacy, kept for compatibility) ── */
-    .app-shell {
-        @apply rounded-[28px] border border-white/70 bg-white/70 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl;
-    }
-    .dark .app-shell {
-        background: rgb(var(--surface) / 0.95);
-        border-color: rgb(var(--border-soft) / 0.6);
-        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(16px);
-    }
-
-    /* ── Surface cards ── */
-    .surface-card {
-        @apply rounded-[24px] border border-stone-200/80 bg-white/90 shadow-[0_14px_40px_rgba(15,23,42,0.06)];
-    }
-    .dark .surface-card {
-        background: rgb(var(--surface));
-        border-color: rgb(var(--border-soft));
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    /* ── Surface muted ── */
-    .surface-muted {
-        @apply rounded-[22px] border border-stone-200/80 bg-stone-50/90;
-    }
-    .dark .surface-muted {
-        background: rgb(var(--surface-muted));
-        border-color: rgb(var(--border-soft));
-    }
 
     /* ──────────────────────────────────────────────────
-       GPT-STYLE SIDEBAR
+       GPT SIDEBAR
     ────────────────────────────────────────────────── */
 
     .gpt-sidebar {
@@ -131,326 +90,471 @@
         display: flex;
         flex-direction: column;
         height: 100%;
-        background: rgb(var(--sidebar-bg));
-        border-right: 1px solid rgba(217, 211, 199, 0.6);
+        background: rgb(248 246 240);
+        border-right: 1px solid rgba(0, 0, 0, 0.07);
         overflow: hidden;
     }
     .dark .gpt-sidebar {
-        background: rgb(var(--sidebar-bg));
-        border-right-color: rgb(var(--border-soft));
+        background: #171717;
+        border-right-color: rgba(255, 255, 255, 0.06);
     }
 
-    /* Sidebar header row (logo + theme btn) */
     .sidebar-header {
         @apply flex items-center justify-between gap-2 px-3 py-3;
     }
 
-    /* Logo link */
     .sidebar-logo {
-        @apply flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-stone-200/60;
+        @apply flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-2 py-1.5 transition;
     }
-    .dark .sidebar-logo {
-        @apply hover:bg-[rgb(var(--surface-muted))];
-    }
+    .sidebar-logo:hover { background: rgba(0,0,0,0.05); }
+    .dark .sidebar-logo:hover { background: rgba(255,255,255,0.06); }
 
-    /* New Reply button */
     .gpt-new-btn {
         @apply flex w-full items-center gap-2.5 rounded-xl bg-slate-950 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800;
-        box-shadow: 0 6px 20px rgba(15,23,42,0.18);
+        box-shadow: 0 4px 14px rgba(15,23,42,0.16);
     }
     .dark .gpt-new-btn {
-        background: rgb(var(--brand));
+        background: rgba(255,255,255,0.08);
+        color: #ececec;
         box-shadow: none;
     }
     .dark .gpt-new-btn:hover {
-        opacity: 0.9;
+        background: rgba(255,255,255,0.12);
     }
 
-    /* Nav links */
-    .gpt-nav-link {
-        @apply flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-200/60 hover:text-stone-950;
-    }
-    .dark .gpt-nav-link {
+    .gpt-search-input {
+        @apply w-full rounded-xl border-0 bg-transparent px-2 py-0 text-sm outline-none;
         color: rgb(var(--text-muted));
     }
-    .dark .gpt-nav-link:hover {
-        background: rgb(var(--surface-muted));
+    .gpt-search-input::placeholder { color: rgb(var(--text-muted)); }
+
+    .gpt-nav-link {
+        @apply flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition;
+        color: rgb(var(--text-muted));
+    }
+    .gpt-nav-link:hover {
+        background: rgba(0,0,0,0.05);
         color: rgb(var(--text-main));
+    }
+    .dark .gpt-nav-link:hover {
+        background: rgba(255,255,255,0.06);
+        color: #ececec;
     }
 
     .gpt-nav-link-active {
-        @apply bg-white text-stone-950 shadow-sm;
+        background: rgba(0,0,0,0.06);
+        color: rgb(var(--text-main));
     }
     .dark .gpt-nav-link-active {
-        background: rgb(var(--surface-muted));
-        color: rgb(var(--text-main));
-        box-shadow: none;
+        background: rgba(255,255,255,0.08);
+        color: #ececec;
     }
 
-    /* Recent chat item */
     .gpt-chat-item {
-        @apply w-full truncate rounded-xl px-3 py-2 text-left text-sm text-stone-500 transition hover:bg-stone-200/60 hover:text-stone-800;
-    }
-    .dark .gpt-chat-item {
+        @apply w-full truncate rounded-xl px-3 py-2 text-left text-sm transition;
         color: rgb(var(--text-muted));
+    }
+    .gpt-chat-item:hover {
+        background: rgba(0,0,0,0.05);
+        color: rgb(var(--text-main));
     }
     .dark .gpt-chat-item:hover {
-        background: rgb(var(--surface-muted));
-        color: rgb(var(--text-main));
+        background: rgba(255,255,255,0.06);
+        color: #ececec;
     }
 
-    /* Icon button (theme toggle, close, etc.) */
     .gpt-icon-btn {
-        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-stone-500 transition hover:bg-stone-200/70 hover:text-stone-800;
-    }
-    .dark .gpt-icon-btn {
+        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition;
         color: rgb(var(--text-muted));
+    }
+    .gpt-icon-btn:hover {
+        background: rgba(0,0,0,0.06);
+        color: rgb(var(--text-main));
     }
     .dark .gpt-icon-btn:hover {
-        background: rgb(var(--surface-muted));
-        color: rgb(var(--text-main));
+        background: rgba(255,255,255,0.08);
+        color: #ececec;
     }
 
-    /* User avatar */
     .gpt-avatar {
-        @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white;
+        @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold;
+        background: #1a1a2e;
+        color: #ececec;
     }
     .dark .gpt-avatar {
-        background: rgb(var(--border-soft));
-        color: rgb(var(--text-main));
+        background: rgba(255,255,255,0.12);
+        color: #ececec;
     }
 
-    /* Sidebar footer */
     .sidebar-footer {
-        @apply flex shrink-0 items-center gap-1 border-t border-stone-200/80 px-3 py-3;
+        @apply flex shrink-0 flex-col gap-2 border-t px-3 py-3;
+        border-top-color: rgba(0,0,0,0.07);
     }
     .dark .sidebar-footer {
-        border-top-color: rgb(var(--border-soft));
+        border-top-color: rgba(255,255,255,0.06);
     }
 
-    /* ── Legacy sidebar links (kept for compatibility) ── */
-    .sidebar-link {
-        @apply flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-stone-600 transition hover:bg-white hover:text-stone-950;
-    }
-    .dark .sidebar-link {
-        color: rgb(var(--text-muted));
-    }
-    .dark .sidebar-link:hover {
-        background: rgb(var(--surface-muted));
-        color: rgb(var(--text-main));
+    /* ──────────────────────────────────────────────────
+       CONVERSATION PANE
+    ────────────────────────────────────────────────── */
+
+    .conversation-pane {
+        @apply flex flex-1 flex-col overflow-hidden;
     }
 
-    .sidebar-link-active {
-        @apply bg-white text-stone-950 shadow-sm ring-1 ring-stone-200/70;
+    /* ──────────────────────────────────────────────────
+       CHAT BUBBLES
+    ────────────────────────────────────────────────── */
+
+    .user-bubble {
+        @apply ml-auto max-w-[80%] rounded-3xl rounded-br-md px-5 py-3.5 text-sm leading-7 text-white;
+        background: #303030;
     }
-    .dark .sidebar-link-active {
-        background: rgb(var(--surface-muted));
-        color: rgb(var(--text-main));
+    /* light mode user bubble */
+    body:not(.dark) .user-bubble {
+        background: #1e293b;
+    }
+
+    /* ──────────────────────────────────────────────────
+       GPT-STYLE COMPOSER
+    ────────────────────────────────────────────────── */
+
+    .gpt-composer {
+        padding: 6px 16px 16px;
+        background: rgb(var(--page-bg));
+    }
+    @media (min-width: 640px) {
+        .gpt-composer { padding: 6px 24px 20px; }
+    }
+    .dark .gpt-composer {
+        background: #212121;
+    }
+
+    .gpt-composer-pill {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 48rem;
+        margin: 0 auto;
+        border-radius: 24px;
+        border: 1px solid rgba(0, 0, 0, 0.09);
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+        padding: 14px 14px 10px;
+        gap: 8px;
+    }
+    .dark .gpt-composer-pill {
+        background: #2f2f2f;
+        border-color: rgba(255, 255, 255, 0.07);
         box-shadow: none;
-        border: 1px solid rgb(var(--border-soft));
     }
 
-    /* ── Chips ── */
+    .gpt-textarea {
+        width: 100%;
+        background: transparent;
+        border: none;
+        outline: none;
+        resize: none;
+        font-size: 0.9375rem;
+        line-height: 1.65;
+        color: rgb(var(--text-main));
+        font-family: inherit;
+        min-height: 26px;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 0;
+    }
+    .gpt-textarea::placeholder { color: rgb(var(--text-muted)); }
+
+    .gpt-pill-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .gpt-tool-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.11);
+        color: #71717a;
+        flex-shrink: 0;
+        transition: all 0.15s;
+        background: transparent;
+    }
+    .gpt-tool-btn:hover { background: rgba(0,0,0,0.05); }
+    .dark .gpt-tool-btn {
+        border-color: rgba(255,255,255,0.10);
+        color: #a1a1aa;
+    }
+    .dark .gpt-tool-btn:hover { background: rgba(255,255,255,0.07); }
+
+    .gpt-send-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #212121;
+        color: #fff;
+        flex-shrink: 0;
+        margin-left: auto;
+        transition: opacity 0.15s;
+    }
+    .gpt-send-btn:hover:not(:disabled) { opacity: 0.80; }
+    .gpt-send-btn:disabled {
+        background: #e5e5e5;
+        color: #aaa;
+        cursor: not-allowed;
+    }
+    .dark .gpt-send-btn {
+        background: #ececec;
+        color: #212121;
+    }
+    .dark .gpt-send-btn:disabled {
+        background: #383838;
+        color: #666;
+    }
+
+    .gpt-control-select {
+        -webkit-appearance: none;
+        appearance: none;
+        background: rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.09);
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #71717a;
+        cursor: pointer;
+        outline: none;
+        font-family: inherit;
+        transition: background 0.15s;
+    }
+    .gpt-control-select:hover { background: rgba(0,0,0,0.08); }
+    .dark .gpt-control-select {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.08);
+        color: #a1a1aa;
+    }
+    .dark .gpt-control-select:hover { background: rgba(255,255,255,0.09); }
+    .dark .gpt-control-select option {
+        background: #2f2f2f;
+        color: #ececec;
+    }
+
+    .gpt-control-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.09);
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #71717a;
+        cursor: pointer;
+        outline: none;
+        font-family: inherit;
+        transition: background 0.15s;
+    }
+    .gpt-control-btn:hover { background: rgba(0,0,0,0.08); }
+    .dark .gpt-control-btn {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.08);
+        color: #a1a1aa;
+    }
+
+    .gpt-action-btn {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #71717a;
+        border: 1px solid transparent;
+        background: transparent;
+        transition: all 0.15s;
+        cursor: pointer;
+    }
+    .gpt-action-btn:hover {
+        background: rgba(0,0,0,0.05);
+        border-color: rgba(0,0,0,0.08);
+        color: #374151;
+    }
+    .dark .gpt-action-btn { color: #a1a1aa; }
+    .dark .gpt-action-btn:hover {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.08);
+        color: #ececec;
+    }
+
+    /* ──────────────────────────────────────────────────
+       THINKING + REPLY ANIMATIONS
+    ────────────────────────────────────────────────── */
+
+    .thinking-dots span {
+        animation: thinkingPulse 1.4s ease-in-out infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    .reply-reveal {
+        animation: replyReveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .skeleton-line {
+        @apply rounded-full;
+        background: linear-gradient(90deg, rgba(231,229,228,0.6) 25%, rgba(255,255,255,0.9) 50%, rgba(231,229,228,0.6) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite linear;
+    }
+    .dark .skeleton-line {
+        background: linear-gradient(90deg, rgba(56,56,56,0.8) 25%, rgba(70,70,70,0.9) 50%, rgba(56,56,56,0.8) 75%);
+        background-size: 200% 100%;
+    }
+
+    /* ──────────────────────────────────────────────────
+       LEGACY / OTHER PAGE COMPONENTS
+    ────────────────────────────────────────────────── */
+
+    .app-shell {
+        @apply rounded-[28px] border border-white/70 bg-white/70 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl;
+    }
+    .dark .app-shell {
+        background: rgb(var(--surface) / 0.95);
+        border-color: rgba(255,255,255,0.06);
+        box-shadow: 0 20px 70px rgba(0,0,0,0.5);
+        backdrop-filter: blur(16px);
+    }
+
+    .surface-card {
+        @apply rounded-[24px] border border-stone-200/80 bg-white/90 shadow-[0_14px_40px_rgba(15,23,42,0.06)];
+    }
+    .dark .surface-card {
+        background: rgb(var(--surface-muted));
+        border-color: rgba(255,255,255,0.06);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .surface-muted {
+        @apply rounded-[22px] border border-stone-200/80 bg-stone-50/90;
+    }
+    .dark .surface-muted {
+        background: rgb(var(--surface-muted));
+        border-color: rgba(255,255,255,0.06);
+    }
+
     .chip {
         @apply inline-flex items-center rounded-full border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-700 transition hover:border-stone-300 hover:text-stone-950;
     }
     .dark .chip {
-        background: rgb(var(--surface-muted));
-        border-color: rgb(var(--border-soft));
-        color: rgb(var(--text-muted));
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.08);
+        color: #a1a1aa;
     }
     .dark .chip:hover {
-        border-color: rgb(var(--text-muted));
-        color: rgb(var(--text-main));
+        background: rgba(255,255,255,0.10);
+        color: #ececec;
     }
 
-    /* ── Field shell ── */
-    .field-shell {
-        @apply rounded-2xl border border-stone-200 bg-white/90 shadow-sm transition focus-within:border-stone-400 focus-within:ring-4 focus-within:ring-stone-200/60;
-    }
-    .dark .field-shell {
-        background: rgb(var(--surface-muted));
-        border-color: rgb(var(--border-soft));
-    }
-    .dark .field-shell:focus-within {
-        border-color: rgb(var(--text-muted));
-    }
-
-    /* ── Conversation pane (full-screen in new layout) ── */
-    .conversation-pane {
-        @apply flex flex-1 flex-col overflow-hidden;
-    }
-    .dark .conversation-pane {
-        /* inherits page-bg */
-    }
-
-    /* ── User bubble ── */
-    .user-bubble {
-        @apply ml-auto max-w-2xl rounded-[28px] rounded-br-md bg-slate-950 px-5 py-4 text-sm leading-7 text-white shadow-[0_18px_36px_rgba(15,23,42,0.16)];
-    }
-    .dark .user-bubble {
-        background: #2a2a2a;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-    }
-
-    /* ── Assistant bubble ── */
-    .assistant-bubble {
-        @apply max-w-4xl rounded-[28px] rounded-bl-md border border-stone-200/80 bg-white/95 p-4 shadow-[0_14px_32px_rgba(15,23,42,0.06)];
-    }
-    .dark .assistant-bubble {
-        background: rgb(var(--surface));
-        border-color: rgb(var(--border-soft));
-        box-shadow: none;
-    }
-
-    /* ── Selector shell (dropdowns, inputs) ── */
     .selector-shell {
         @apply rounded-2xl border border-stone-200 bg-white/90 px-3 py-2.5 text-sm font-medium text-stone-700 shadow-sm outline-none transition focus:border-stone-400 focus:ring-4 focus:ring-stone-200/60;
     }
     .dark .selector-shell {
         background: rgb(var(--surface-muted));
-        border-color: rgb(var(--border-soft));
-        color: rgb(var(--text-main));
+        border-color: rgba(255,255,255,0.08);
+        color: #ececec;
         box-shadow: none;
     }
-    .dark .selector-shell:focus {
-        border-color: rgb(var(--text-muted));
+    .dark .selector-shell:focus { border-color: rgba(255,255,255,0.2); }
+    .dark .selector-shell option { background: #2f2f2f; color: #ececec; }
+
+    .field-shell {
+        @apply rounded-2xl border border-stone-200 bg-white/90 shadow-sm transition focus-within:border-stone-400;
     }
-    .dark .selector-shell option {
-        background: rgb(var(--surface));
-        color: rgb(var(--text-main));
+    .dark .field-shell {
+        background: rgb(var(--surface-muted));
+        border-color: rgba(255,255,255,0.08);
     }
 
-    /* ── Action pills ── */
     .action-pill {
         @apply inline-flex items-center rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-stone-700 transition hover:border-stone-300 hover:text-stone-950;
     }
     .dark .action-pill {
-        background: rgb(var(--surface-muted));
-        border-color: rgb(var(--border-soft));
-        color: rgb(var(--text-muted));
-    }
-    .dark .action-pill:hover {
-        border-color: rgb(var(--text-muted));
-        color: rgb(var(--text-main));
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.08);
+        color: #a1a1aa;
     }
 
+    /* Sidebar links (legacy, used by navigation for desktop) */
+    .sidebar-link {
+        @apply flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition;
+        color: rgb(var(--text-muted));
+    }
+    .sidebar-link:hover {
+        background: rgba(0,0,0,0.05);
+        color: rgb(var(--text-main));
+    }
+    .dark .sidebar-link:hover {
+        background: rgba(255,255,255,0.06);
+        color: #ececec;
+    }
+    .sidebar-link-active {
+        background: rgba(0,0,0,0.06);
+        color: rgb(var(--text-main));
+    }
+    .dark .sidebar-link-active {
+        background: rgba(255,255,255,0.08);
+        color: #ececec;
+    }
+
+    /* Reply actions (legacy) */
     .reply-action-pill {
         @apply inline-flex items-center rounded-full px-3 py-2 text-xs font-semibold transition;
     }
-
     .reply-action-primary {
         @apply bg-slate-950 text-white hover:bg-slate-800;
     }
-    .dark .reply-action-primary {
-        background: rgb(var(--text-main));
-        color: rgb(var(--page-bg));
-    }
-    .dark .reply-action-primary:hover {
-        background: rgb(var(--surface-strong));
-    }
-
+    .dark .reply-action-primary { background: #ececec; color: #212121; }
     .reply-action-secondary {
-        @apply border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 hover:text-stone-950;
+        @apply border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100;
     }
     .dark .reply-action-secondary {
-        background: rgb(var(--surface-muted));
-        border-color: rgb(var(--border-soft));
-        color: rgb(var(--text-muted));
-    }
-    .dark .reply-action-secondary:hover {
-        background: rgb(var(--border-soft));
-        color: rgb(var(--text-main));
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.08);
+        color: #a1a1aa;
     }
 
-    /* ── Thinking bubble pulse ── */
-    .thinking-pulse {
-        animation: thinkingPulse 1.8s ease-in-out infinite;
+    /* Advanced options panel */
+    .advanced-options-panel {
+        border-radius: 20px;
+        border: 1px solid rgba(0,0,0,0.08);
+        padding: 1rem;
+        background: rgba(255,255,255,0.92);
     }
-    .dark .thinking-pulse {
-        animation: none;
-    }
-
-    /* ── Reply reveal animation ── */
-    .reply-reveal {
-        animation: replyReveal 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    /* ── Skeleton shimmer ── */
-    .skeleton-line {
-        @apply rounded-full bg-[length:200%_100%];
-        background-image: linear-gradient(90deg, rgba(231, 229, 228, 0.65) 25%, rgba(255, 255, 255, 0.96) 50%, rgba(231, 229, 228, 0.65) 75%);
-        animation: shimmer 1.5s infinite linear;
-    }
-    .dark .skeleton-line {
-        background-image: linear-gradient(90deg, rgba(55,55,55,0.8) 25%, rgba(70,70,70,0.9) 50%, rgba(55,55,55,0.8) 75%);
+    .dark .advanced-options-panel {
+        background: #2a2a2a;
+        border-color: rgba(255,255,255,0.07);
     }
 
-    /* ── Mode tab buttons ── */
+    /* Mode tabs */
     .mode-tab-active {
         background: white;
         color: rgb(21 23 25);
         box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .dark .mode-tab-active {
-        background: rgb(var(--border-soft));
-        color: rgb(var(--text-main));
+        background: rgba(255,255,255,0.12);
+        color: #ececec;
         box-shadow: none;
     }
-    .mode-tab-inactive {
-        color: rgb(91 96 99);
-    }
-    .dark .mode-tab-inactive {
-        color: rgb(var(--text-muted));
-    }
-
-    /* ── Composer wrapper ── */
-    .composer-wrapper {
-        border-top: 1px solid rgba(217, 211, 199, 0.6);
-        padding: 0.75rem;
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(20px);
-    }
-    @media (min-width: 640px) {
-        .composer-wrapper { padding: 1rem 1.5rem; }
-    }
-    .dark .composer-wrapper {
-        background: rgb(var(--surface));
-        border-top-color: rgb(var(--border-soft));
-        backdrop-filter: none;
-    }
-
-    /* ── Composer form ── */
-    .composer-form {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        width: 100%;
-        max-width: 48rem;
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 30px;
-        border: 1px solid rgba(217, 211, 199, 0.8);
-        padding: 1rem;
-        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(248, 246, 240, 0.97));
-        box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
-    }
-    .dark .composer-form {
-        background-image: none;
-        background-color: rgb(var(--surface-muted));
-        border-color: rgb(var(--border-soft));
-        box-shadow: none;
-    }
-
-    /* ── Advanced options panel ── */
-    .advanced-options-panel {
-        border-radius: 24px;
-        border: 1px solid rgba(217, 211, 199, 0.8);
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.85);
-    }
-    .dark .advanced-options-panel {
-        background: rgb(var(--surface));
-        border-color: rgb(var(--border-soft));
-    }
+    .mode-tab-inactive { color: rgb(91 96 99); }
+    .dark .mode-tab-inactive { color: #a1a1aa; }
 }
