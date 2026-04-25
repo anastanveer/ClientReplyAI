@@ -214,6 +214,8 @@ class ReplyWorkspace extends Component
                 'role'         => 'assistant',
                 'text'         => $result->bestReply,
                 'riskNote'     => $result->riskNote,
+                'coachNote'    => $result->coachNote,
+                'nextStep'     => $result->nextStep,
                 'qualityScore' => $this->qualityScore,
             ];
 
@@ -277,11 +279,21 @@ class ReplyWorkspace extends Component
                 $riskNote = (is_string($rawRiskNote) && $rawRiskNote !== '' && $rawRiskNote !== 'null')
                     ? $rawRiskNote
                     : null;
+                $rawCoachNote = $msgMeta['coach_note'] ?? null;
+                $coachNote = (is_string($rawCoachNote) && $rawCoachNote !== '' && $rawCoachNote !== 'null')
+                    ? $rawCoachNote
+                    : null;
+                $rawNextStep = $msgMeta['next_step'] ?? null;
+                $nextStep = (is_string($rawNextStep) && $rawNextStep !== '' && $rawNextStep !== 'null')
+                    ? $rawNextStep
+                    : null;
                 $reply = $msg->output_text ?? '';
                 $this->messages[] = [
                     'role'         => 'assistant',
                     'text'         => $reply,
                     'riskNote'     => $riskNote,
+                    'coachNote'    => $coachNote,
+                    'nextStep'     => $nextStep,
                     'qualityScore' => $reply ? $this->estimateQualityScore($reply, $riskNote) : 0,
                 ];
             }

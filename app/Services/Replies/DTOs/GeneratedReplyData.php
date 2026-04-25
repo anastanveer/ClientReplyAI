@@ -17,6 +17,8 @@ final readonly class GeneratedReplyData
         public ChatMessage $assistantMessage,
         public string $bestReply,
         public ?string $riskNote,
+        public ?string $coachNote,
+        public ?string $nextStep,
         public array $variants,
         public string $provider,
         public string $model,

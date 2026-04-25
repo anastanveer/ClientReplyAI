@@ -99,6 +99,8 @@
                             $isLast    = ($idx === $msgCount - 1);
                             $msgText   = $msg['text'];
                             $msgRisk   = $msg['riskNote'] ?? null;
+                            $msgCoach  = $msg['coachNote'] ?? null;
+                            $msgNext   = $msg['nextStep'] ?? null;
                             $msgQ      = $msg['qualityScore'] ?? 0;
                         @endphp
 
@@ -140,6 +142,40 @@
                             @if ($msgRisk && $msgRisk !== 'null')
                                 <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-300">
                                     <span class="font-semibold">Note:</span> {{ $msgRisk }}
+                                </div>
+                            @endif
+
+                            {{-- Reply Coach section --}}
+                            @if ($msgCoach || $msgNext)
+                                <div x-data="{ open: false }" class="mt-3">
+                                    <button
+                                        type="button"
+                                        @click="open = !open"
+                                        class="flex items-center gap-1.5 text-xs font-medium text-stone-400 hover:text-stone-600 dark:text-[#71717a] dark:hover:text-[#a1a1aa] transition-colors"
+                                    >
+                                        <svg class="h-3.5 w-3.5 transition-transform" :class="open ? 'rotate-90' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                        Why this works
+                                    </button>
+                                    <div x-show="open" x-collapse class="mt-2 space-y-2">
+                                        @if ($msgCoach)
+                                            <div class="flex gap-2 text-xs text-stone-500 dark:text-[#a1a1aa]">
+                                                <svg class="mt-0.5 h-3.5 w-3.5 shrink-0 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+                                                </svg>
+                                                <span>{{ $msgCoach }}</span>
+                                            </div>
+                                        @endif
+                                        @if ($msgNext)
+                                            <div class="flex gap-2 text-xs text-stone-500 dark:text-[#a1a1aa]">
+                                                <svg class="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                <span><span class="font-medium text-stone-600 dark:text-[#d4d4d8]">Next step:</span> {{ $msgNext }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             @endif
 

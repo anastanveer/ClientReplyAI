@@ -85,6 +85,8 @@ class ReplyGenerationService
                 'output_text' => $parsed['best_reply'],
                 'meta' => [
                     'risk_note' => $parsed['risk_note'],
+                    'coach_note' => $parsed['coach_note'],
+                    'next_step' => $parsed['next_step'],
                     'variants' => $parsed['variants'],
                     'provider' => $aiResult->provider,
                     'model' => $aiResult->model,
@@ -105,6 +107,8 @@ class ReplyGenerationService
                 assistantMessage: $assistantMessage,
                 bestReply: $parsed['best_reply'],
                 riskNote: $parsed['risk_note'],
+                coachNote: $parsed['coach_note'],
+                nextStep: $parsed['next_step'],
                 variants: $parsed['variants'],
                 provider: $aiResult->provider,
                 model: $aiResult->model,
@@ -139,7 +143,7 @@ class ReplyGenerationService
     }
 
     /**
-     * @return array{best_reply:string, risk_note:?string, variants:array<string, string>}
+     * @return array{best_reply:string, risk_note:?string, coach_note:?string, next_step:?string, variants:array<string, string>}
      */
     protected function parseAiResponse(string $content): array
     {
@@ -157,7 +161,15 @@ class ReplyGenerationService
 
         $riskNote = $decoded['risk_note'] ?? null;
         $riskNote = $riskNote !== null ? trim((string) $riskNote) : null;
-        $riskNote = $riskNote !== '' ? $riskNote : null;
+        $riskNote = ($riskNote !== '' && $riskNote !== 'null') ? $riskNote : null;
+
+        $coachNote = $decoded['coach_note'] ?? null;
+        $coachNote = $coachNote !== null ? trim((string) $coachNote) : null;
+        $coachNote = ($coachNote !== '' && $coachNote !== 'null') ? $coachNote : null;
+
+        $nextStep = $decoded['next_step'] ?? null;
+        $nextStep = $nextStep !== null ? trim((string) $nextStep) : null;
+        $nextStep = ($nextStep !== '' && $nextStep !== 'null') ? $nextStep : null;
 
         $variants = $decoded['variants'] ?? [];
 
@@ -182,6 +194,8 @@ class ReplyGenerationService
         return [
             'best_reply' => $bestReply,
             'risk_note' => $riskNote,
+            'coach_note' => $coachNote,
+            'next_step' => $nextStep,
             'variants' => $normalizedVariants,
         ];
     }

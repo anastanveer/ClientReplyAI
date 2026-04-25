@@ -28,6 +28,7 @@ class ReplyPromptBuilder
             tone:     $context->toneRule['label'],
             receiver: $context->receiver,
             context:  $context->additionalContext,
+            platform: $context->platform,
         );
 
         return new BuiltPrompt(
@@ -74,6 +75,9 @@ class ReplyPromptBuilder
         } else {
             $lines[] = 'Set risk_note only for genuine risks: rude tone, overpromise, weak positioning, or a critically missing detail that changes reply quality. Otherwise set risk_note to null.';
         }
+
+        $lines[] = 'Set coach_note to one short sentence explaining WHY this reply achieves the goal (e.g. "Opens with acknowledgment to lower defensiveness, then states the clear ask."). If there is nothing non-obvious, set coach_note to null.';
+        $lines[] = 'Set next_step to a short, specific, actionable recommendation for the sender\'s next move AFTER sending this reply (e.g. "Follow up in 48 hours if no response."). Set to null if no follow-up is needed.';
 
         if ($context->hasOptionalVariants()) {
             $lines[] = 'Generate optional variants only for the specifically requested variant keys — nothing extra.';
@@ -146,6 +150,8 @@ class ReplyPromptBuilder
         $schema = [
             'best_reply' => 'string',
             'risk_note' => 'string|null',
+            'coach_note' => 'string|null',
+            'next_step' => 'string|null',
             'variants' => 'object',
         ];
 
@@ -175,7 +181,7 @@ class ReplyPromptBuilder
                 $context->allowedVariants,
             )).'}';
 
-        return 'Return valid minified JSON with exactly these keys: {"best_reply":"string","risk_note":"string|null",'.$variantInstruction.'}.';
+        return 'Return valid minified JSON with exactly these keys: {"best_reply":"string","risk_note":"string|null","coach_note":"string|null","next_step":"string|null",'.$variantInstruction.'}.';
     }
 
     protected function formatVariants(ResolvedPromptContext $context): string

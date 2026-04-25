@@ -9,6 +9,9 @@ class ReplyStrategyBuilder
         protected OutcomeDetector $outcomeDetector,
         protected ClientPsychologyDetector $psychologyDetector,
         protected RiskDetector $riskDetector,
+        protected SmartModeAnalyzer $smartModeAnalyzer,
+        protected ReplyLadderDetector $ladderDetector,
+        protected SituationDetector $situationDetector,
     ) {}
 
     public function build(
@@ -17,14 +20,19 @@ class ReplyStrategyBuilder
         string $tone,
         ?string $receiver = null,
         ?string $context = null,
+        ?string $platform = null,
     ): AIEngineContext {
         $intent = $this->intentDetector->detect($message, $useCase);
         $outcome = $this->outcomeDetector->detect($intent, $tone);
         $clientType = $this->psychologyDetector->detect($message, $receiver, $context);
         $risks = $this->riskDetector->detect($message);
 
+        $ladderStage = $this->ladderDetector->detect($message);
+        $situation = $this->situationDetector->detect($message, $receiver, $context);
+        $smartHints = $this->smartModeAnalyzer->analyze($message, $platform, $tone);
+
         [$length, $addNextStep, $shouldBeFirm, $shouldSoften, $strategyNote] =
-            $this->buildStrategy($intent, $outcome, $clientType, $tone);
+            $this->buildStrategy($intent, $outcome, $clientType, $tone, $ladderStage, $situation, $smartHints);
 
         return new AIEngineContext(
             intent: $intent,
@@ -39,6 +47,13 @@ class ReplyStrategyBuilder
             shouldBeFirm: $shouldBeFirm,
             shouldSoften: $shouldSoften,
             strategyNote: $strategyNote,
+            ladderStage: $ladderStage,
+            ladderLabel: $this->ladderDetector->label($ladderStage),
+            situationMode: $situation,
+            situationLabel: $this->situationDetector->label($situation),
+            platformStyle: $smartHints->platformStyle,
+            intensitySignal: $smartHints->intensitySignal,
+            contextHint: $smartHints->contextHint,
         );
     }
 
@@ -50,8 +65,13 @@ class ReplyStrategyBuilder
         string $outcome,
         string $clientType,
         string $tone,
+        string $ladderStage,
+        string $situation,
+        SmartModeHints $smartHints,
     ): array {
-        $length = 'medium (2–3 sentences)';
+        $length = $smartHints->suggestedLength === 'short'
+            ? 'short (1–2 sentences)'
+            : ($smartHints->suggestedLength === 'detailed' ? 'detailed (3–5 sentences)' : 'medium (2–3 sentences)');
         $addNextStep = false;
         $shouldBeFirm = false;
         $shouldSoften = false;
@@ -97,6 +117,29 @@ class ReplyStrategyBuilder
                 break;
         }
 
+        // Ladder stage escalation overrides
+        if ($ladderStage === 'final') {
+            $shouldBeFirm = true;
+            $notes[] = 'this is a final message — tone must reflect last resort without aggression';
+        } elseif ($ladderStage === 'firm') {
+            $shouldBeFirm = true;
+            $notes[] = 'sender has followed up multiple times — signal clear impatience professionally';
+        }
+
+        // Situation overrides
+        if ($situation === 'angry_client') {
+            $shouldSoften = true;
+            $shouldBeFirm = false;
+            $notes[] = 'client is upset — acknowledge before any other point, do not defend immediately';
+        } elseif ($situation === 'ghosting') {
+            $shouldBeFirm = true;
+            $notes[] = 'receiver is unresponsive — be more direct, create mild urgency without desperation';
+        } elseif ($situation === 'low_budget') {
+            $notes[] = 'budget-sensitive client — justify value clearly, do not discount';
+        } elseif ($situation === 'revision_request') {
+            $notes[] = 'revision request — be cooperative but confident, do not appear eager or apologetic';
+        }
+
         // Client psychology adjustments
         if ($clientType === 'ghosting') {
             $shouldBeFirm = true;
@@ -121,7 +164,7 @@ class ReplyStrategyBuilder
             $notes[] = 'formal receiver — maintain professional register throughout';
         }
 
-        // Tone overrides
+        // Tone overrides (highest priority for length)
         if (in_array(strtolower($tone), ['short', 'direct'])) {
             $length = 'short (1–2 sentences)';
         }
