@@ -337,7 +337,7 @@
                         @endforeach
                     </select>
 
-                    <select wire:model.live="useCase" class="gpt-control-select">
+                    <select wire:model.live="useCase" class="gpt-control-select hidden sm:block">
                         @foreach ($useCaseOptions as $option)
                             <option value="{{ $option }}">{{ $option }}</option>
                         @endforeach
