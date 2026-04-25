@@ -13,6 +13,15 @@ new class extends Component
         $this->redirect('/', navigate: true);
     }
 
+    public function deleteChat(int $id): void
+    {
+        $chat = auth()->user()->chats()->find($id);
+        if ($chat !== null) {
+            $chat->delete();
+        }
+        $this->dispatch('chat-deleted', id: $id);
+    }
+
     public function navUsage(): array
     {
         $user = auth()->user();
@@ -260,11 +269,52 @@ new class extends Component
                             <div class="mb-1 px-2 text-xs font-medium text-stone-400 dark:text-[#a1a1aa]">{{ $groupLabel }}</div>
                             <div class="space-y-0.5">
                                 @foreach ($items as $item)
-                                    <button
-                                        type="button"
-                                        class="gpt-chat-item"
-                                        @click="$dispatch('chat-selected', { id: {{ $item['id'] }} })"
-                                    >{{ $item['title'] }}</button>
+                                    <div
+                                        x-data="{ open: false, dx: 0, dy: 0 }"
+                                        class="group relative"
+                                        @click.outside="open = false"
+                                    >
+                                        <div class="flex items-center rounded-xl transition" :class="open ? 'bg-black/5 dark:bg-white/[0.06]' : 'hover:bg-black/5 dark:hover:bg-white/[0.06]'">
+                                            <button
+                                                type="button"
+                                                class="min-w-0 flex-1 truncate px-3 py-2 text-left text-sm text-stone-500 transition group-hover:text-stone-800 dark:text-[#a1a1aa] dark:group-hover:text-[#ececec]"
+                                                @click="$dispatch('chat-selected', { id: {{ $item['id'] }} }); open = false"
+                                            >{{ $item['title'] }}</button>
+                                            <button
+                                                type="button"
+                                                class="mr-1 shrink-0 rounded-lg p-1 text-stone-400 opacity-0 transition group-hover:opacity-100 hover:bg-black/10 dark:text-[#71717a] dark:hover:bg-white/10"
+                                                @click.stop="const r=$el.getBoundingClientRect(); dx=r.left; dy=r.bottom+4; open=!open"
+                                            >
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4ZM10 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4ZM10 18a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div
+                                            x-cloak
+                                            x-show="open"
+                                            x-transition:enter="transition ease-out duration-100"
+                                            x-transition:enter-start="opacity-0 scale-95"
+                                            x-transition:enter-end="opacity-100 scale-100"
+                                            x-transition:leave="transition ease-in duration-75"
+                                            x-transition:leave-start="opacity-100 scale-100"
+                                            x-transition:leave-end="opacity-0 scale-95"
+                                            class="chat-dropdown"
+                                            :style="`position:fixed;top:${dy}px;left:${dx}px;z-index:9999`"
+                                        >
+                                            <button
+                                                type="button"
+                                                class="chat-dropdown-item chat-dropdown-item-danger"
+                                                wire:click="deleteChat({{ $item['id'] }})"
+                                                @click="open = false"
+                                            >
+                                                <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                </svg>
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
                                 @endforeach
                             </div>
                         </section>
@@ -407,11 +457,52 @@ new class extends Component
                     <div class="mb-3">
                         <div class="mb-1 px-2 text-xs font-medium text-stone-400 dark:text-[#a1a1aa]">{{ $groupLabel }}</div>
                         @foreach ($items as $item)
-                            <button
-                                type="button"
-                                class="gpt-chat-item"
-                                @click="$dispatch('chat-selected', { id: {{ $item['id'] }} }); open = false"
-                            >{{ $item['title'] }}</button>
+                            <div
+                                x-data="{ mOpen: false, dx: 0, dy: 0 }"
+                                class="group relative"
+                                @click.outside="mOpen = false"
+                            >
+                                <div class="flex items-center rounded-xl transition" :class="mOpen ? 'bg-black/5 dark:bg-white/[0.06]' : 'hover:bg-black/5 dark:hover:bg-white/[0.06]'">
+                                    <button
+                                        type="button"
+                                        class="min-w-0 flex-1 truncate px-3 py-2 text-left text-sm text-stone-500 transition group-hover:text-stone-800 dark:text-[#a1a1aa] dark:group-hover:text-[#ececec]"
+                                        @click="$dispatch('chat-selected', { id: {{ $item['id'] }} }); open = false; mOpen = false"
+                                    >{{ $item['title'] }}</button>
+                                    <button
+                                        type="button"
+                                        class="mr-1 shrink-0 rounded-lg p-1 text-stone-400 opacity-0 transition group-hover:opacity-100 hover:bg-black/10 dark:text-[#71717a] dark:hover:bg-white/10"
+                                        @click.stop="const r=$el.getBoundingClientRect(); dx=r.left; dy=r.bottom+4; mOpen=!mOpen"
+                                    >
+                                        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4ZM10 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4ZM10 18a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div
+                                    x-cloak
+                                    x-show="mOpen"
+                                    x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="chat-dropdown"
+                                    :style="`position:fixed;top:${dy}px;left:${dx}px;z-index:9999`"
+                                >
+                                    <button
+                                        type="button"
+                                        class="chat-dropdown-item chat-dropdown-item-danger"
+                                        wire:click="deleteChat({{ $item['id'] }})"
+                                        @click="mOpen = false"
+                                    >
+                                        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
                         @endforeach
                     </div>
                 @endforeach

@@ -163,6 +163,41 @@
         color: #ececec;
     }
 
+    /* ── Chat item 3-dot dropdown ── */
+    .chat-dropdown {
+        min-width: 160px;
+        border-radius: 14px;
+        background: #ffffff;
+        border: 1px solid rgba(0,0,0,0.09);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+        padding: 4px 0;
+        overflow: hidden;
+    }
+    .dark .chat-dropdown {
+        background: #2f2f2f;
+        border-color: rgba(255,255,255,0.09);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    }
+    .chat-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 9px 16px;
+        font-size: 0.875rem;
+        text-align: left;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: rgb(var(--text-main));
+        transition: background 0.1s;
+    }
+    .chat-dropdown-item:hover { background: rgba(0,0,0,0.05); }
+    .dark .chat-dropdown-item:hover { background: rgba(255,255,255,0.07); }
+    .chat-dropdown-item-danger { color: #ef4444; }
+    .dark .chat-dropdown-item-danger { color: #f87171; }
+    .chat-dropdown-item-danger:hover { background: rgba(239,68,68,0.08) !important; }
+
     .gpt-icon-btn {
         @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition;
         color: rgb(var(--text-muted));
@@ -220,11 +255,15 @@
     ────────────────────────────────────────────────── */
 
     .gpt-composer {
-        padding: 6px 16px 16px;
+        padding: 6px 12px 12px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
         background: rgb(var(--page-bg));
     }
     @media (min-width: 640px) {
-        .gpt-composer { padding: 6px 24px 20px; }
+        .gpt-composer {
+            padding: 6px 24px 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+        }
     }
     .dark .gpt-composer {
         background: #212121;
@@ -401,6 +440,29 @@
         border-color: rgba(255,255,255,0.08);
         color: #ececec;
     }
+
+    .gpt-icon-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        padding: 6px;
+        color: #9ca3af;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+    }
+    .gpt-icon-action:hover {
+        background: rgba(0,0,0,0.06);
+        color: #374151;
+    }
+    .dark .gpt-icon-action { color: #71717a; }
+    .dark .gpt-icon-action:hover {
+        background: rgba(255,255,255,0.08);
+        color: #ececec;
+    }
+    .gpt-icon-action:disabled { opacity: 0.5; cursor: default; }
 
     /* ──────────────────────────────────────────────────
        THINKING + REPLY ANIMATIONS

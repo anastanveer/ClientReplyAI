@@ -52,6 +52,13 @@ class ReplyWorkspace extends Component
      */
     public array $variants = [];
 
+    /**
+     * Full conversation thread: [['role'=>'user|assistant','text'=>'...','riskNote'=>null,'qualityScore'=>0], ...]
+     *
+     * @var list<array<string,mixed>>
+     */
+    public array $messages = [];
+
     public ?string $providerStatus = null;
 
     public ?string $errorMessage = null;
@@ -151,6 +158,11 @@ class ReplyWorkspace extends Component
         );
     }
 
+    public function clearWorkspace(): void
+    {
+        $this->resetGenerationFeedback();
+    }
+
     public function generateReply(): void
     {
         $validated = $this->validate();
@@ -188,6 +200,23 @@ class ReplyWorkspace extends Component
                 ? sprintf('Gemini was unavailable, so %s generated this reply as fallback.', ucfirst($result->provider))
                 : sprintf('Generated with %s.', ucfirst($result->provider));
 
+            // Build the conversation thread
+            $lastMsg = end($this->messages);
+            $isRegenerate = $lastMsg !== false && $lastMsg['role'] === 'assistant'
+                && $this->lastSubmittedMessage === $validated['composer'];
+
+            if ($isRegenerate) {
+                array_pop($this->messages);
+            } else {
+                $this->messages[] = ['role' => 'user', 'text' => $validated['composer']];
+            }
+            $this->messages[] = [
+                'role'         => 'assistant',
+                'text'         => $result->bestReply,
+                'riskNote'     => $result->riskNote,
+                'qualityScore' => $this->qualityScore,
+            ];
+
             $this->refreshUsageSummary();
         } catch (DailyLimitExceededException|InvalidAiResponseException $exception) {
             $this->errorMessage = $exception->userMessage();
@@ -206,25 +235,26 @@ class ReplyWorkspace extends Component
             return;
         }
 
-        $userMsg = $chat->messages()
-            ->where('role', 'user')
-            ->latest()
-            ->first();
+        // Load all messages ordered chronologically
+        $allMessages = $chat->messages()->orderBy('created_at')->get();
 
-        $assistantMsg = $chat->messages()
-            ->where('role', 'assistant')
-            ->latest()
-            ->first();
-
-        if ($userMsg === null) {
+        if ($allMessages->isEmpty()) {
             return;
         }
 
-        $meta = $userMsg->meta ?? [];
+        // Set tone/useCase/language from latest user message meta
+        $latestUserMsg = $allMessages->where('role', 'user')->last();
+        $latestAssistantMsg = $allMessages->where('role', 'assistant')->last();
+
+        if ($latestUserMsg === null) {
+            return;
+        }
+
+        $meta = $latestUserMsg->meta ?? [];
 
         $this->currentChatId = $chat->id;
-        $this->lastSubmittedMessage = $userMsg->input_text;
-        $this->composer = $userMsg->input_text ?? $this->composer;
+        $this->lastSubmittedMessage = $latestUserMsg->input_text;
+        $this->composer = $latestUserMsg->input_text ?? $this->composer;
         $this->tone = $meta['tone'] ?? $this->tone;
         $this->useCase = $meta['use_case'] ?? $this->useCase;
         $this->language = $meta['language'] ?? $this->language;
@@ -233,17 +263,42 @@ class ReplyWorkspace extends Component
         $this->errorMessage = null;
         $this->providerStatus = null;
 
-        if ($assistantMsg !== null) {
-            $assistantMeta = $assistantMsg->meta ?? [];
-            $this->lastAssistantMessageId = $assistantMsg->id;
-            $this->bestReply = $assistantMsg->output_text;
-            $this->riskNote = is_string($assistantMeta['risk_note'] ?? null)
-                ? ($assistantMeta['risk_note'] ?: null)
+        // Build full conversation thread
+        $this->messages = [];
+        foreach ($allMessages as $msg) {
+            if ($msg->role === 'user') {
+                $this->messages[] = [
+                    'role' => 'user',
+                    'text' => $msg->input_text ?? '',
+                ];
+            } else {
+                $msgMeta = $msg->meta ?? [];
+                $rawRiskNote = $msgMeta['risk_note'] ?? null;
+                $riskNote = (is_string($rawRiskNote) && $rawRiskNote !== '' && $rawRiskNote !== 'null')
+                    ? $rawRiskNote
+                    : null;
+                $reply = $msg->output_text ?? '';
+                $this->messages[] = [
+                    'role'         => 'assistant',
+                    'text'         => $reply,
+                    'riskNote'     => $riskNote,
+                    'qualityScore' => $reply ? $this->estimateQualityScore($reply, $riskNote) : 0,
+                ];
+            }
+        }
+
+        // Sync backward-compat vars from latest assistant message
+        if ($latestAssistantMsg !== null) {
+            $assistantMeta = $latestAssistantMsg->meta ?? [];
+            $this->lastAssistantMessageId = $latestAssistantMsg->id;
+            $this->bestReply = $latestAssistantMsg->output_text;
+            $rawRiskNote = $assistantMeta['risk_note'] ?? null;
+            $this->riskNote = (is_string($rawRiskNote) && $rawRiskNote !== '' && $rawRiskNote !== 'null')
+                ? $rawRiskNote
                 : null;
             $this->variants = is_array($assistantMeta['variants'] ?? null)
                 ? $assistantMeta['variants']
                 : [];
-
             if ($this->bestReply) {
                 $this->qualityScore = $this->estimateQualityScore($this->bestReply, $this->riskNote);
             }
@@ -362,6 +417,9 @@ class ReplyWorkspace extends Component
         $this->qualityScore = 0;
         $this->savedReplyId = null;
         $this->lastAssistantMessageId = null;
+        $this->lastSubmittedMessage = null;
+        $this->messages = [];
+        $this->currentChatId = null;
     }
 
     protected function estimateQualityScore(string $reply, ?string $riskNote): int

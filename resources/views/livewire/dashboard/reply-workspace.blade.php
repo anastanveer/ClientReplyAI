@@ -2,6 +2,7 @@
     x-data="{ mode: $wire.entangle('mode'), advancedOpen: $wire.entangle('advancedOpen') }"
     class="conversation-pane"
     x-on:chat-selected.window="$wire.loadChat($event.detail.id)"
+    x-on:chat-deleted.window="if ($event.detail.id === $wire.currentChatId) $wire.clearWorkspace()"
 >
     {{-- ── Floating top row: mode tabs + usage (no bar, no border) ── --}}
     <div class="flex shrink-0 items-center justify-between gap-3 px-4 pt-3 pb-1 sm:px-6">
@@ -31,7 +32,7 @@
     {{-- ── Scrollable messages area ── --}}
     <div class="flex-1 overflow-y-auto">
 
-        @if (!$lastSubmittedMessage)
+        @if (empty($messages))
 
             {{-- ── Empty / welcome state ── --}}
             <div class="flex min-h-full flex-col items-center justify-center px-4 py-16">
@@ -67,8 +68,8 @@
 
         @else
 
-            {{-- ── Chat messages ── --}}
-            <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+            {{-- ── Conversation thread ── --}}
+            <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6" x-data>
 
                 @if ($errorMessage)
                     <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-800/40 dark:bg-rose-900/20 dark:text-rose-300">
@@ -76,14 +77,141 @@
                     </div>
                 @endif
 
-                {{-- User message (right-aligned) --}}
-                <div class="mb-6 flex justify-end">
-                    <div class="user-bubble">
-                        {{ $lastSubmittedMessage }}
-                    </div>
-                </div>
+                @php $msgCount = count($messages); @endphp
 
-                {{-- Loading / thinking state --}}
+                @foreach ($messages as $idx => $msg)
+
+                    @if ($msg['role'] === 'user')
+                        {{-- User message (right-aligned bubble) --}}
+                        <div class="mb-4 flex justify-end">
+                            <div class="user-bubble">{{ $msg['text'] }}</div>
+                        </div>
+
+                    @else
+                        @php
+                            $isLast    = ($idx === $msgCount - 1);
+                            $msgText   = $msg['text'];
+                            $msgRisk   = $msg['riskNote'] ?? null;
+                            $msgQ      = $msg['qualityScore'] ?? 0;
+                        @endphp
+
+                        {{-- AI message --}}
+                        <div class="{{ $isLast ? 'reply-reveal' : '' }} mb-6">
+
+                            @if ($isLast)
+                                {{-- Typewriter for the latest reply --}}
+                                <p
+                                    x-data="{
+                                        target: @js($msgText),
+                                        shown: '',
+                                        ver: 0,
+                                        type() {
+                                            this.shown = '';
+                                            const v = ++this.ver;
+                                            let i = 0;
+                                            const delay = Math.max(3, Math.min(12, Math.floor(1800 / this.target.length)));
+                                            const tick = () => {
+                                                if (v !== this.ver) return;
+                                                this.shown += this.target[i++];
+                                                if (i < this.target.length) setTimeout(tick, delay);
+                                            };
+                                            if (this.target.length) tick();
+                                        }
+                                    }"
+                                    x-init="
+                                        type();
+                                        $wire.$watch('bestReply', v => { if (v) { target = v; type(); } });
+                                    "
+                                    x-text="shown"
+                                    class="text-[0.9375rem] leading-8 text-stone-700 dark:text-[#ececec]"
+                                ></p>
+                            @else
+                                {{-- Static text for history --}}
+                                <p class="whitespace-pre-wrap text-[0.9375rem] leading-8 text-stone-700 dark:text-[#ececec]">{{ $msgText }}</p>
+                            @endif
+
+                            @if ($msgRisk && $msgRisk !== 'null')
+                                <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-300">
+                                    <span class="font-semibold">Note:</span> {{ $msgRisk }}
+                                </div>
+                            @endif
+
+                            {{-- Meta row --}}
+                            @if ($isLast)
+                                <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-stone-400 dark:text-[#a1a1aa]">
+                                    <span>{{ $tone }}</span>
+                                    <span>·</span>
+                                    <span>{{ $useCase }}</span>
+                                    <span>·</span>
+                                    <span>{{ $msgQ }}% quality</span>
+                                </div>
+                            @endif
+
+                            {{-- Action row --}}
+                            <div class="mt-2 flex flex-wrap items-center gap-0.5">
+                                {{-- Copy (on every AI message) --}}
+                                <button
+                                    type="button"
+                                    class="gpt-icon-action"
+                                    x-data="{ copied: false, text: @js($msgText) }"
+                                    @click="navigator.clipboard.writeText(text); copied = true; setTimeout(() => copied = false, 2000)"
+                                    :title="copied ? 'Copied!' : 'Copy'"
+                                >
+                                    <svg x-show="!copied" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                    <svg x-show="copied" class="h-4 w-4 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </button>
+
+                                @if ($isLast)
+                                    {{-- Save / Saved (only on last reply) --}}
+                                    @if ($savedReplyId)
+                                        <button type="button" class="gpt-icon-action cursor-default text-emerald-500" title="Saved" disabled>
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M5 3a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2H5z"/>
+                                            </svg>
+                                        </button>
+                                    @else
+                                        <button type="button" class="gpt-icon-action" wire:click="saveReply" wire:loading.attr="disabled" wire:target="saveReply" title="Save reply">
+                                            <span wire:loading.remove wire:target="saveReply">
+                                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                                    <path d="M19 21l-7-3-7 3V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                                </svg>
+                                            </span>
+                                            <span wire:loading wire:target="saveReply">
+                                                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M12 3v3m0 12v3M3 12h3m12 0h3" stroke-linecap="round"/>
+                                                </svg>
+                                            </span>
+                                        </button>
+                                    @endif
+
+                                    {{-- Regenerate (only on last reply) --}}
+                                    <button type="button" class="gpt-icon-action" wire:click="generateReply" title="Regenerate reply">
+                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                        </svg>
+                                    </button>
+
+                                    @if ($savedReplyId)
+                                        <a href="{{ route('saved-replies') }}" wire:navigate class="ml-2 text-xs text-stone-400 hover:underline dark:text-[#a1a1aa]">View saved →</a>
+                                    @endif
+
+                                    @if ($providerStatus)
+                                        <span class="ml-auto text-xs text-stone-400 dark:text-[#a1a1aa]">{{ $providerStatus }}</span>
+                                    @endif
+                                @endif
+                            </div>
+
+                        </div>
+                    @endif
+
+                @endforeach
+
+                {{-- Loading / thinking state (after last message) --}}
                 <div wire:loading wire:target="generateReply" class="mb-6">
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-stone-400 dark:text-[#a1a1aa]">Thinking</span>
@@ -99,84 +227,6 @@
                         <div class="skeleton-line h-3.5 w-9/12"></div>
                     </div>
                 </div>
-
-                @if ($bestReply)
-                    {{-- AI response ── --}}
-                    <div class="reply-reveal mb-6">
-
-                        {{-- Reply text with typewriter --}}
-                        <p
-                            x-data="{
-                                target: @js($bestReply),
-                                shown: '',
-                                ver: 0,
-                                type() {
-                                    this.shown = '';
-                                    const v = ++this.ver;
-                                    let i = 0;
-                                    const delay = Math.max(3, Math.min(12, Math.floor(1800 / this.target.length)));
-                                    const tick = () => {
-                                        if (v !== this.ver) return;
-                                        this.shown += this.target[i++];
-                                        if (i < this.target.length) setTimeout(tick, delay);
-                                    };
-                                    if (this.target.length) tick();
-                                }
-                            }"
-                            x-init="
-                                type();
-                                $wire.$watch('bestReply', v => { if (v) { target = v; type(); } });
-                            "
-                            x-text="shown"
-                            class="text-[0.9375rem] leading-8 text-stone-700 dark:text-[#ececec]"
-                        ></p>
-
-                        @if ($riskNote)
-                            <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-300">
-                                <span class="font-semibold">Note:</span> {{ $riskNote }}
-                            </div>
-                        @endif
-
-                        {{-- Small meta row --}}
-                        <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-stone-400 dark:text-[#a1a1aa]">
-                            <span>{{ $tone }}</span>
-                            <span>·</span>
-                            <span>{{ $useCase }}</span>
-                            <span>·</span>
-                            <span>{{ $qualityScore }}% quality</span>
-                        </div>
-
-                        {{-- Action row --}}
-                        <div class="mt-3 flex flex-wrap items-center gap-1">
-                            <button
-                                type="button"
-                                class="gpt-action-btn"
-                                x-data="{ copied: false, text: @js($bestReply) }"
-                                @click="navigator.clipboard.writeText(text); copied = true; setTimeout(() => copied = false, 2000)"
-                                x-text="copied ? '✓ Copied' : 'Copy'"
-                            >Copy</button>
-
-                            @if ($savedReplyId)
-                                <span class="gpt-action-btn opacity-50 cursor-default">Saved ✓</span>
-                            @else
-                                <button type="button" class="gpt-action-btn" wire:click="saveReply" wire:loading.attr="disabled" wire:target="saveReply">
-                                    <span wire:loading.remove wire:target="saveReply">Save</span>
-                                    <span wire:loading wire:target="saveReply">Saving…</span>
-                                </button>
-                            @endif
-
-                            <button type="button" class="gpt-action-btn" wire:click="generateReply">Regenerate</button>
-
-                            @if ($savedReplyId)
-                                <a href="{{ route('saved-replies') }}" wire:navigate class="ml-3 text-xs text-stone-400 hover:underline dark:text-[#a1a1aa]">View saved →</a>
-                            @endif
-
-                            @if ($providerStatus)
-                                <span class="ml-auto text-xs text-stone-400 dark:text-[#a1a1aa]">{{ $providerStatus }}</span>
-                            @endif
-                        </div>
-                    </div>
-                @endif
 
             </div>
         @endif
