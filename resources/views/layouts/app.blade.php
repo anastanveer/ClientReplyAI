@@ -38,22 +38,21 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen px-3 py-3 sm:px-4 sm:py-4 lg:px-5">
-            <div class="app-shell grid min-h-[calc(100vh-1.5rem)] overflow-hidden lg:grid-cols-[280px_minmax(0,1fr)]">
-                <livewire:layout.navigation />
+        <div class="flex h-screen overflow-hidden bg-[rgb(var(--page-bg))]">
+            <livewire:layout.navigation />
 
-                <main class="min-w-0 overflow-y-auto">
-                    <div class="mx-auto flex min-h-full w-full max-w-7xl flex-col px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
-                        @if (isset($header))
-                            <header class="mb-6">
-                                {{ $header }}
-                            </header>
-                        @endif
-
+            <main class="flex min-w-0 flex-1 flex-col overflow-hidden">
+                @if (isset($header))
+                    <header class="shrink-0 border-b border-stone-200/80 px-4 py-4 sm:px-6 dark:border-[rgb(var(--border-soft))]">
+                        {{ $header }}
+                    </header>
+                    <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
                         {{ $slot }}
                     </div>
-                </main>
-            </div>
+                @else
+                    {{ $slot }}
+                @endif
+            </main>
         </div>
     </body>
 </html>

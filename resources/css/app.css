@@ -16,21 +16,23 @@
         --brand: 25 91 255;
         --brand-soft: 227 236 255;
         --success: 17 138 87;
+        --sidebar-bg: 248 246 240;
     }
 
     /* ── Dark mode variables ── */
     .dark {
         color-scheme: dark;
-        --page-bg: 18 18 18;
-        --surface: 30 30 30;
-        --surface-muted: 40 40 40;
+        --page-bg: 13 13 13;
+        --surface: 26 26 26;
+        --surface-muted: 38 38 38;
         --surface-strong: 236 236 236;
-        --border-soft: 55 55 55;
-        --text-main: 236 236 236;
-        --text-muted: 155 155 155;
+        --border-soft: 52 52 52;
+        --text-main: 230 230 230;
+        --text-muted: 140 140 140;
         --brand: 129 140 248;
         --brand-soft: 49 46 129;
         --success: 74 222 128;
+        --sidebar-bg: 23 23 23;
     }
 
     html {
@@ -48,7 +50,6 @@
         background-attachment: fixed;
     }
 
-    /* Dark body — remove the warm gradient, use clean dark bg */
     .dark body {
         background-image: none;
         background-color: rgb(var(--page-bg));
@@ -62,7 +63,7 @@
         display: none !important;
     }
 
-    /* PWA safe area padding for notched phones */
+    /* PWA safe area */
     .app-shell {
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -90,7 +91,7 @@
 }
 
 @layer components {
-    /* ── App shell ── */
+    /* ── App shell (legacy, kept for compatibility) ── */
     .app-shell {
         @apply rounded-[28px] border border-white/70 bg-white/70 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl;
     }
@@ -120,7 +121,114 @@
         border-color: rgb(var(--border-soft));
     }
 
-    /* ── Sidebar links ── */
+    /* ──────────────────────────────────────────────────
+       GPT-STYLE SIDEBAR
+    ────────────────────────────────────────────────── */
+
+    .gpt-sidebar {
+        width: 260px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: rgb(var(--sidebar-bg));
+        border-right: 1px solid rgba(217, 211, 199, 0.6);
+        overflow: hidden;
+    }
+    .dark .gpt-sidebar {
+        background: rgb(var(--sidebar-bg));
+        border-right-color: rgb(var(--border-soft));
+    }
+
+    /* Sidebar header row (logo + theme btn) */
+    .sidebar-header {
+        @apply flex items-center justify-between gap-2 px-3 py-3;
+    }
+
+    /* Logo link */
+    .sidebar-logo {
+        @apply flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-stone-200/60;
+    }
+    .dark .sidebar-logo {
+        @apply hover:bg-[rgb(var(--surface-muted))];
+    }
+
+    /* New Reply button */
+    .gpt-new-btn {
+        @apply flex w-full items-center gap-2.5 rounded-xl bg-slate-950 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800;
+        box-shadow: 0 6px 20px rgba(15,23,42,0.18);
+    }
+    .dark .gpt-new-btn {
+        background: rgb(var(--brand));
+        box-shadow: none;
+    }
+    .dark .gpt-new-btn:hover {
+        opacity: 0.9;
+    }
+
+    /* Nav links */
+    .gpt-nav-link {
+        @apply flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-200/60 hover:text-stone-950;
+    }
+    .dark .gpt-nav-link {
+        color: rgb(var(--text-muted));
+    }
+    .dark .gpt-nav-link:hover {
+        background: rgb(var(--surface-muted));
+        color: rgb(var(--text-main));
+    }
+
+    .gpt-nav-link-active {
+        @apply bg-white text-stone-950 shadow-sm;
+    }
+    .dark .gpt-nav-link-active {
+        background: rgb(var(--surface-muted));
+        color: rgb(var(--text-main));
+        box-shadow: none;
+    }
+
+    /* Recent chat item */
+    .gpt-chat-item {
+        @apply w-full truncate rounded-xl px-3 py-2 text-left text-sm text-stone-500 transition hover:bg-stone-200/60 hover:text-stone-800;
+    }
+    .dark .gpt-chat-item {
+        color: rgb(var(--text-muted));
+    }
+    .dark .gpt-chat-item:hover {
+        background: rgb(var(--surface-muted));
+        color: rgb(var(--text-main));
+    }
+
+    /* Icon button (theme toggle, close, etc.) */
+    .gpt-icon-btn {
+        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-stone-500 transition hover:bg-stone-200/70 hover:text-stone-800;
+    }
+    .dark .gpt-icon-btn {
+        color: rgb(var(--text-muted));
+    }
+    .dark .gpt-icon-btn:hover {
+        background: rgb(var(--surface-muted));
+        color: rgb(var(--text-main));
+    }
+
+    /* User avatar */
+    .gpt-avatar {
+        @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white;
+    }
+    .dark .gpt-avatar {
+        background: rgb(var(--border-soft));
+        color: rgb(var(--text-main));
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+        @apply flex shrink-0 items-center gap-1 border-t border-stone-200/80 px-3 py-3;
+    }
+    .dark .sidebar-footer {
+        border-top-color: rgb(var(--border-soft));
+    }
+
+    /* ── Legacy sidebar links (kept for compatibility) ── */
     .sidebar-link {
         @apply flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-stone-600 transition hover:bg-white hover:text-stone-950;
     }
@@ -139,7 +247,6 @@
         background: rgb(var(--surface-muted));
         color: rgb(var(--text-main));
         box-shadow: none;
-        ring-color: transparent;
         border: 1px solid rgb(var(--border-soft));
     }
 
@@ -167,17 +274,14 @@
     }
     .dark .field-shell:focus-within {
         border-color: rgb(var(--text-muted));
-        ring-color: rgb(var(--border-soft) / 0.4);
     }
 
-    /* ── Conversation pane ── */
+    /* ── Conversation pane (full-screen in new layout) ── */
     .conversation-pane {
-        @apply rounded-[28px] border border-stone-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(247,244,238,0.96))] shadow-[0_22px_55px_rgba(15,23,42,0.07)];
+        @apply flex flex-1 flex-col overflow-hidden;
     }
     .dark .conversation-pane {
-        background: rgb(var(--surface));
-        border-color: rgb(var(--border-soft));
-        box-shadow: none;
+        /* inherits page-bg */
     }
 
     /* ── User bubble ── */
@@ -272,7 +376,7 @@
         animation: replyReveal 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* ── Skeleton shimmer (dark) ── */
+    /* ── Skeleton shimmer ── */
     .skeleton-line {
         @apply rounded-full bg-[length:200%_100%];
         background-image: linear-gradient(90deg, rgba(231, 229, 228, 0.65) 25%, rgba(255, 255, 255, 0.96) 50%, rgba(231, 229, 228, 0.65) 75%);
@@ -282,7 +386,7 @@
         background-image: linear-gradient(90deg, rgba(55,55,55,0.8) 25%, rgba(70,70,70,0.9) 50%, rgba(55,55,55,0.8) 75%);
     }
 
-    /* ── Mode tab buttons (Quick Reply / Advanced) ── */
+    /* ── Mode tab buttons ── */
     .mode-tab-active {
         background: white;
         color: rgb(21 23 25);
@@ -300,14 +404,12 @@
         color: rgb(var(--text-muted));
     }
 
-    /* ── Composer footer (sticky input bar) ── */
+    /* ── Composer wrapper ── */
     .composer-wrapper {
-        position: sticky;
-        bottom: 0;
-        border-top: 1px solid rgba(217, 211, 199, 0.8);
+        border-top: 1px solid rgba(217, 211, 199, 0.6);
         padding: 0.75rem;
-        backdrop-filter: blur(16px);
-        background: rgba(255, 255, 255, 0.85);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(20px);
     }
     @media (min-width: 640px) {
         .composer-wrapper { padding: 1rem 1.5rem; }
@@ -315,22 +417,23 @@
     .dark .composer-wrapper {
         background: rgb(var(--surface));
         border-top-color: rgb(var(--border-soft));
+        backdrop-filter: none;
     }
 
-    /* ── Composer form (the rounded input card) ── */
+    /* ── Composer form ── */
     .composer-form {
         display: flex;
         flex-direction: column;
         gap: 1rem;
         width: 100%;
-        max-width: 64rem;
+        max-width: 48rem;
         margin-left: auto;
         margin-right: auto;
         border-radius: 30px;
         border: 1px solid rgba(217, 211, 199, 0.8);
         padding: 1rem;
-        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 246, 240, 0.96));
-        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(248, 246, 240, 0.97));
+        box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
     }
     .dark .composer-form {
         background-image: none;
