@@ -1,0 +1,324 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* ── Light mode variables ── */
+    :root {
+        color-scheme: light;
+        --page-bg: 244 241 233;
+        --surface: 255 255 255;
+        --surface-muted: 248 246 240;
+        --surface-strong: 33 35 35;
+        --border-soft: 217 211 199;
+        --text-main: 21 23 25;
+        --text-muted: 91 96 99;
+        --brand: 25 91 255;
+        --brand-soft: 227 236 255;
+        --success: 17 138 87;
+    }
+
+    /* ── Dark mode variables ── */
+    .dark {
+        color-scheme: dark;
+        --page-bg: 18 18 18;
+        --surface: 30 30 30;
+        --surface-muted: 40 40 40;
+        --surface-strong: 236 236 236;
+        --border-soft: 55 55 55;
+        --text-main: 236 236 236;
+        --text-muted: 155 155 155;
+        --brand: 129 140 248;
+        --brand-soft: 49 46 129;
+        --success: 74 222 128;
+    }
+
+    html {
+        @apply scroll-smooth;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply min-h-screen bg-[rgb(var(--page-bg))] text-[rgb(var(--text-main))] antialiased;
+        font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+        background-image:
+            radial-gradient(circle at top left, rgba(25, 91, 255, 0.12), transparent 32%),
+            radial-gradient(circle at top right, rgba(15, 23, 42, 0.08), transparent 22%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(244, 241, 233, 0.95));
+        background-attachment: fixed;
+    }
+
+    /* Dark body — remove the warm gradient, use clean dark bg */
+    .dark body {
+        background-image: none;
+        background-color: rgb(var(--page-bg));
+    }
+
+    ::selection {
+        @apply bg-slate-700 text-white;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* PWA safe area padding for notched phones */
+    .app-shell {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+}
+
+@layer components {
+    /* ── App shell ── */
+    .app-shell {
+        @apply rounded-[28px] border border-white/70 bg-white/70 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl;
+    }
+    .dark .app-shell {
+        background: rgb(var(--surface) / 0.95);
+        border-color: rgb(var(--border-soft) / 0.6);
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(16px);
+    }
+
+    /* ── Surface cards ── */
+    .surface-card {
+        @apply rounded-[24px] border border-stone-200/80 bg-white/90 shadow-[0_14px_40px_rgba(15,23,42,0.06)];
+    }
+    .dark .surface-card {
+        background: rgb(var(--surface));
+        border-color: rgb(var(--border-soft));
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ── Surface muted ── */
+    .surface-muted {
+        @apply rounded-[22px] border border-stone-200/80 bg-stone-50/90;
+    }
+    .dark .surface-muted {
+        background: rgb(var(--surface-muted));
+        border-color: rgb(var(--border-soft));
+    }
+
+    /* ── Sidebar links ── */
+    .sidebar-link {
+        @apply flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-stone-600 transition hover:bg-white hover:text-stone-950;
+    }
+    .dark .sidebar-link {
+        color: rgb(var(--text-muted));
+    }
+    .dark .sidebar-link:hover {
+        background: rgb(var(--surface-muted));
+        color: rgb(var(--text-main));
+    }
+
+    .sidebar-link-active {
+        @apply bg-white text-stone-950 shadow-sm ring-1 ring-stone-200/70;
+    }
+    .dark .sidebar-link-active {
+        background: rgb(var(--surface-muted));
+        color: rgb(var(--text-main));
+        box-shadow: none;
+        ring-color: transparent;
+        border: 1px solid rgb(var(--border-soft));
+    }
+
+    /* ── Chips ── */
+    .chip {
+        @apply inline-flex items-center rounded-full border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-700 transition hover:border-stone-300 hover:text-stone-950;
+    }
+    .dark .chip {
+        background: rgb(var(--surface-muted));
+        border-color: rgb(var(--border-soft));
+        color: rgb(var(--text-muted));
+    }
+    .dark .chip:hover {
+        border-color: rgb(var(--text-muted));
+        color: rgb(var(--text-main));
+    }
+
+    /* ── Field shell ── */
+    .field-shell {
+        @apply rounded-2xl border border-stone-200 bg-white/90 shadow-sm transition focus-within:border-stone-400 focus-within:ring-4 focus-within:ring-stone-200/60;
+    }
+    .dark .field-shell {
+        background: rgb(var(--surface-muted));
+        border-color: rgb(var(--border-soft));
+    }
+    .dark .field-shell:focus-within {
+        border-color: rgb(var(--text-muted));
+        ring-color: rgb(var(--border-soft) / 0.4);
+    }
+
+    /* ── Conversation pane ── */
+    .conversation-pane {
+        @apply rounded-[28px] border border-stone-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(247,244,238,0.96))] shadow-[0_22px_55px_rgba(15,23,42,0.07)];
+    }
+    .dark .conversation-pane {
+        background: rgb(var(--surface));
+        border-color: rgb(var(--border-soft));
+        box-shadow: none;
+    }
+
+    /* ── User bubble ── */
+    .user-bubble {
+        @apply ml-auto max-w-2xl rounded-[28px] rounded-br-md bg-slate-950 px-5 py-4 text-sm leading-7 text-white shadow-[0_18px_36px_rgba(15,23,42,0.16)];
+    }
+    .dark .user-bubble {
+        background: #2a2a2a;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    /* ── Assistant bubble ── */
+    .assistant-bubble {
+        @apply max-w-4xl rounded-[28px] rounded-bl-md border border-stone-200/80 bg-white/95 p-4 shadow-[0_14px_32px_rgba(15,23,42,0.06)];
+    }
+    .dark .assistant-bubble {
+        background: rgb(var(--surface));
+        border-color: rgb(var(--border-soft));
+        box-shadow: none;
+    }
+
+    /* ── Selector shell (dropdowns, inputs) ── */
+    .selector-shell {
+        @apply rounded-2xl border border-stone-200 bg-white/90 px-3 py-2.5 text-sm font-medium text-stone-700 shadow-sm outline-none transition focus:border-stone-400 focus:ring-4 focus:ring-stone-200/60;
+    }
+    .dark .selector-shell {
+        background: rgb(var(--surface-muted));
+        border-color: rgb(var(--border-soft));
+        color: rgb(var(--text-main));
+        box-shadow: none;
+    }
+    .dark .selector-shell:focus {
+        border-color: rgb(var(--text-muted));
+    }
+    .dark .selector-shell option {
+        background: rgb(var(--surface));
+        color: rgb(var(--text-main));
+    }
+
+    /* ── Action pills ── */
+    .action-pill {
+        @apply inline-flex items-center rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-stone-700 transition hover:border-stone-300 hover:text-stone-950;
+    }
+    .dark .action-pill {
+        background: rgb(var(--surface-muted));
+        border-color: rgb(var(--border-soft));
+        color: rgb(var(--text-muted));
+    }
+    .dark .action-pill:hover {
+        border-color: rgb(var(--text-muted));
+        color: rgb(var(--text-main));
+    }
+
+    .reply-action-pill {
+        @apply inline-flex items-center rounded-full px-3 py-2 text-xs font-semibold transition;
+    }
+
+    .reply-action-primary {
+        @apply bg-slate-950 text-white hover:bg-slate-800;
+    }
+    .dark .reply-action-primary {
+        background: rgb(var(--text-main));
+        color: rgb(var(--page-bg));
+    }
+    .dark .reply-action-primary:hover {
+        background: rgb(var(--surface-strong));
+    }
+
+    .reply-action-secondary {
+        @apply border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 hover:text-stone-950;
+    }
+    .dark .reply-action-secondary {
+        background: rgb(var(--surface-muted));
+        border-color: rgb(var(--border-soft));
+        color: rgb(var(--text-muted));
+    }
+    .dark .reply-action-secondary:hover {
+        background: rgb(var(--border-soft));
+        color: rgb(var(--text-main));
+    }
+
+    /* ── Skeleton shimmer (dark) ── */
+    .skeleton-line {
+        @apply rounded-full bg-[length:200%_100%];
+        background-image: linear-gradient(90deg, rgba(231, 229, 228, 0.65) 25%, rgba(255, 255, 255, 0.96) 50%, rgba(231, 229, 228, 0.65) 75%);
+        animation: shimmer 1.5s infinite linear;
+    }
+    .dark .skeleton-line {
+        background-image: linear-gradient(90deg, rgba(55,55,55,0.8) 25%, rgba(70,70,70,0.9) 50%, rgba(55,55,55,0.8) 75%);
+    }
+
+    /* ── Mode tab buttons (Quick Reply / Advanced) ── */
+    .mode-tab-active {
+        background: white;
+        color: rgb(21 23 25);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .dark .mode-tab-active {
+        background: rgb(var(--border-soft));
+        color: rgb(var(--text-main));
+        box-shadow: none;
+    }
+    .mode-tab-inactive {
+        color: rgb(91 96 99);
+    }
+    .dark .mode-tab-inactive {
+        color: rgb(var(--text-muted));
+    }
+
+    /* ── Composer footer (sticky input bar) ── */
+    .composer-wrapper {
+        position: sticky;
+        bottom: 0;
+        border-top: 1px solid rgba(217, 211, 199, 0.8);
+        padding: 0.75rem;
+        backdrop-filter: blur(16px);
+        background: rgba(255, 255, 255, 0.85);
+    }
+    @media (min-width: 640px) {
+        .composer-wrapper { padding: 1rem 1.5rem; }
+    }
+    .dark .composer-wrapper {
+        background: rgb(var(--surface));
+        border-top-color: rgb(var(--border-soft));
+    }
+
+    /* ── Composer form (the rounded input card) ── */
+    .composer-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 64rem;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 30px;
+        border: 1px solid rgba(217, 211, 199, 0.8);
+        padding: 1rem;
+        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 246, 240, 0.96));
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    }
+    .dark .composer-form {
+        background-image: none;
+        background-color: rgb(var(--surface-muted));
+        border-color: rgb(var(--border-soft));
+        box-shadow: none;
+    }
+
+    /* ── Advanced options panel ── */
+    .advanced-options-panel {
+        border-radius: 24px;
+        border: 1px solid rgba(217, 211, 199, 0.8);
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.85);
+    }
+    .dark .advanced-options-panel {
+        background: rgb(var(--surface));
+        border-color: rgb(var(--border-soft));
+    }
+}
