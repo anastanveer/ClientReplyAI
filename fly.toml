@@ -1,0 +1,41 @@
+app = 'clientreplyai'
+primary_region = 'sin'
+
+[build]
+
+[env]
+  APP_ENV = "production"
+  APP_DEBUG = "false"
+  LOG_CHANNEL = "stderr"
+  LOG_LEVEL = "error"
+  DB_CONNECTION = "sqlite"
+  DB_DATABASE = "/var/www/html/database/database.sqlite"
+  SESSION_DRIVER = "database"
+  CACHE_STORE = "database"
+  QUEUE_CONNECTION = "database"
+  AI_PROVIDER = "gemini"
+  AI_FALLBACK_PROVIDER = "groq"
+  AI_TIMEOUT = "20"
+  GEMINI_MODEL = "gemini-2.5-flash"
+  GROQ_MODEL = "llama-3.3-70b-versatile"
+
+[[mounts]]
+  source = "sqlite_data"
+  destination = "/var/www/html/database"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 100
+    hard_limit = 200
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
