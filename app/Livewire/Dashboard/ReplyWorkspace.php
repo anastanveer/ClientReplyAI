@@ -198,6 +198,64 @@ class ReplyWorkspace extends Component
         }
     }
 
+    public function loadChat(int $chatId): void
+    {
+        $chat = auth()->user()->chats()->find($chatId);
+
+        if ($chat === null) {
+            return;
+        }
+
+        $userMsg = $chat->messages()
+            ->where('role', 'user')
+            ->latest()
+            ->first();
+
+        $assistantMsg = $chat->messages()
+            ->where('role', 'assistant')
+            ->latest()
+            ->first();
+
+        if ($userMsg === null) {
+            return;
+        }
+
+        $meta = $userMsg->meta ?? [];
+
+        $this->currentChatId = $chat->id;
+        $this->lastSubmittedMessage = $userMsg->input_text;
+        $this->composer = $userMsg->input_text ?? $this->composer;
+        $this->tone = $meta['tone'] ?? $this->tone;
+        $this->useCase = $meta['use_case'] ?? $this->useCase;
+        $this->language = $meta['language'] ?? $this->language;
+        $this->mode = $meta['mode'] ?? $this->mode;
+        $this->savedReplyId = null;
+        $this->errorMessage = null;
+        $this->providerStatus = null;
+
+        if ($assistantMsg !== null) {
+            $assistantMeta = $assistantMsg->meta ?? [];
+            $this->lastAssistantMessageId = $assistantMsg->id;
+            $this->bestReply = $assistantMsg->output_text;
+            $this->riskNote = is_string($assistantMeta['risk_note'] ?? null)
+                ? ($assistantMeta['risk_note'] ?: null)
+                : null;
+            $this->variants = is_array($assistantMeta['variants'] ?? null)
+                ? $assistantMeta['variants']
+                : [];
+
+            if ($this->bestReply) {
+                $this->qualityScore = $this->estimateQualityScore($this->bestReply, $this->riskNote);
+            }
+        } else {
+            $this->bestReply = null;
+            $this->riskNote = null;
+            $this->variants = [];
+            $this->qualityScore = 0;
+            $this->lastAssistantMessageId = null;
+        }
+    }
+
     public function saveReply(): void
     {
         if ($this->bestReply === null || $this->currentChatId === null || $this->savedReplyId !== null) {

@@ -65,7 +65,7 @@ new class extends Component
                 $label = 'Older';
             }
 
-            $groups[$label][] = $chat->title;
+            $groups[$label][] = ['id' => $chat->id, 'title' => $chat->title];
         }
 
         return $groups;
@@ -251,23 +251,27 @@ new class extends Component
         <div class="flex-1 overflow-y-auto px-3">
             @if (count($recentGroups))
                 <div class="mb-2 flex items-center justify-between">
-                    <span class="px-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-400 dark:text-[rgb(var(--text-muted))]">Recent</span>
-                    <a href="{{ route('chat-history') }}" wire:navigate class="text-xs text-stone-400 transition hover:text-stone-600 dark:text-[rgb(var(--text-muted))] dark:hover:text-[rgb(var(--text-main))]">All →</a>
+                    <span class="px-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-400 dark:text-[#a1a1aa]">Recent</span>
+                    <a href="{{ route('chat-history') }}" wire:navigate class="text-xs text-stone-400 transition hover:text-stone-600 dark:text-[#a1a1aa] dark:hover:text-[#ececec]">All →</a>
                 </div>
                 <div class="space-y-4">
                     @foreach ($recentGroups as $groupLabel => $items)
                         <section>
-                            <div class="mb-1 px-2 text-xs font-medium text-stone-400 dark:text-[rgb(var(--text-muted))]">{{ $groupLabel }}</div>
+                            <div class="mb-1 px-2 text-xs font-medium text-stone-400 dark:text-[#a1a1aa]">{{ $groupLabel }}</div>
                             <div class="space-y-0.5">
                                 @foreach ($items as $item)
-                                    <button type="button" class="gpt-chat-item">{{ $item }}</button>
+                                    <button
+                                        type="button"
+                                        class="gpt-chat-item"
+                                        @click="$dispatch('chat-selected', { id: {{ $item['id'] }} })"
+                                    >{{ $item['title'] }}</button>
                                 @endforeach
                             </div>
                         </section>
                     @endforeach
                 </div>
             @else
-                <p class="px-2 text-xs text-stone-400 dark:text-[rgb(var(--text-muted))]">No recent chats yet.</p>
+                <p class="px-2 text-xs text-stone-400 dark:text-[#a1a1aa]">No recent chats yet.</p>
             @endif
         </div>
 
@@ -401,9 +405,13 @@ new class extends Component
             <div class="flex-1 overflow-y-auto px-3">
                 @foreach ($recentGroups as $groupLabel => $items)
                     <div class="mb-3">
-                        <div class="mb-1 px-2 text-xs font-medium text-stone-400 dark:text-[rgb(var(--text-muted))]">{{ $groupLabel }}</div>
+                        <div class="mb-1 px-2 text-xs font-medium text-stone-400 dark:text-[#a1a1aa]">{{ $groupLabel }}</div>
                         @foreach ($items as $item)
-                            <button type="button" class="gpt-chat-item" @click="open = false">{{ $item }}</button>
+                            <button
+                                type="button"
+                                class="gpt-chat-item"
+                                @click="$dispatch('chat-selected', { id: {{ $item['id'] }} }); open = false"
+                            >{{ $item['title'] }}</button>
                         @endforeach
                     </div>
                 @endforeach

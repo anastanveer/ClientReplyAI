@@ -1,6 +1,7 @@
 <div
     x-data="{ mode: $wire.entangle('mode'), advancedOpen: $wire.entangle('advancedOpen') }"
     class="conversation-pane"
+    x-on:chat-selected.window="$wire.loadChat($event.detail.id)"
 >
     {{-- ── Floating top row: mode tabs + usage (no bar, no border) ── --}}
     <div class="flex shrink-0 items-center justify-between gap-3 px-4 pt-3 pb-1 sm:px-6">
