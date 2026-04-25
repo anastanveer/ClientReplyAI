@@ -45,43 +45,43 @@ class PromptContextResolver
         return [
             'professional' => [
                 'label' => 'Professional',
-                'instruction' => 'Keep the reply polished, credible, and ready for work or client communication.',
+                'instruction' => 'Keep the reply polished, credible, and work-appropriate. Sound like someone with authority and experience — not stiff or bureaucratic.',
             ],
             'friendly' => [
                 'label' => 'Friendly',
-                'instruction' => 'Keep the reply warm, human, and approachable without becoming casual or careless.',
+                'instruction' => 'Keep the reply warm, human, and approachable. Build rapport without becoming casual, sloppy, or unprofessional.',
             ],
             'polite' => [
                 'label' => 'Polite',
-                'instruction' => 'Use respectful wording, soften harsh edges, and keep the message courteous.',
+                'instruction' => 'Use courteous wording that softens hard edges while still delivering the message clearly. Never let politeness make the sender sound weak.',
             ],
             'confident' => [
                 'label' => 'Confident',
-                'instruction' => 'Sound assured and competent without arrogance or pressure.',
+                'instruction' => 'Sound assured, grounded, and competent. Project quiet authority — not aggressive, not uncertain. The sender knows their value.',
             ],
             'strong' => [
                 'label' => 'Strong',
-                'instruction' => 'Be firm and clear about boundaries or requests while staying professional.',
+                'instruction' => 'Be firm, clear, and unapologetic about the request or boundary while remaining professional. This is not aggression — it is clarity with backbone.',
             ],
             'soft' => [
                 'label' => 'Soft',
-                'instruction' => 'Use gentle language and reduce friction while preserving the user meaning.',
+                'instruction' => 'Use gentle, low-friction language that reduces resistance from the receiver. Preserve the full meaning while lowering emotional temperature.',
             ],
             'direct' => [
                 'label' => 'Direct',
-                'instruction' => 'Keep the reply concise, straight to the point, and easy to act on.',
+                'instruction' => 'Get to the point immediately. No filler, no padding. One or two sentences maximum. Easy to read and act on.',
             ],
             'respectful' => [
                 'label' => 'Respectful',
-                'instruction' => 'Prioritize dignity, calm wording, and a balanced professional tone.',
+                'instruction' => 'Prioritize the receiver\'s dignity and a calm, balanced tone. Suitable for sensitive situations or senior stakeholders.',
             ],
             'short' => [
                 'label' => 'Short',
-                'instruction' => 'Keep the reply brief and efficient while retaining the core message.',
+                'instruction' => 'Keep the reply as brief as possible while still being complete and professional. Aim for 1–2 sentences.',
             ],
             'detailed' => [
                 'label' => 'Detailed',
-                'instruction' => 'Provide a fuller response only when necessary, still keeping it practical and readable.',
+                'instruction' => 'Provide a thorough response that covers the full situation — but still stays organized, readable, and not padded.',
             ],
         ];
     }
@@ -94,83 +94,83 @@ class PromptContextResolver
         return [
             'general_reply' => [
                 'label' => 'General Reply',
-                'instruction' => 'Write a broadly useful daily communication reply that is practical and natural.',
+                'instruction' => 'Write a practical, human, and natural daily communication reply. Detect the sender intent and produce a reply that fits the real situation.',
             ],
             'fiverr_client_reply' => [
                 'label' => 'Fiverr Client Reply',
-                'instruction' => 'Sound helpful, clear, and professional for a buyer or freelance client conversation.',
+                'instruction' => 'Write for a freelance platform context. Sound professional, reliable, and responsive. Focus on maintaining the client relationship while asserting your expertise. Do not sound desperate or overly eager.',
             ],
             'whatsapp_business_reply' => [
                 'label' => 'WhatsApp Business Reply',
-                'instruction' => 'Keep the reply compact, human, and easy to send in a business chat.',
+                'instruction' => 'Keep the reply compact and conversational while staying professional. WhatsApp readers scan quickly — be clear and direct. Avoid long paragraphs.',
             ],
             'email_reply' => [
                 'label' => 'Email Reply',
-                'instruction' => 'Use email-appropriate structure and wording, with clearer transitions and professionalism.',
+                'instruction' => 'Write with email-appropriate structure: clear opening, concise body, and a purposeful close. Use professional but non-stiff wording. Avoid excessive formality.',
             ],
             'job_recruiter_reply' => [
                 'label' => 'Job Recruiter Reply',
-                'instruction' => 'Sound professional, interested, and credible for recruiter communication.',
+                'instruction' => 'Sound genuinely interested, professional, and confident — not desperate. Show that you value the opportunity while positioning yourself as a strong candidate. Keep it concise and easy to respond to.',
             ],
             'linkedin_reply' => [
                 'label' => 'LinkedIn Reply',
-                'instruction' => 'Keep the reply polished and networking-friendly without sounding generic.',
+                'instruction' => 'Sound polished, human, and networking-appropriate. Avoid corporate jargon or hollow phrases. Keep it warm, purposeful, and brief enough to invite a response.',
             ],
             'proposal_reply' => [
                 'label' => 'Proposal Reply',
-                'instruction' => 'Show clarity, seriousness, and value without exaggeration.',
+                'instruction' => 'Show clarity, confidence, and clear value. Make it easy for the receiver to say yes. Do not exaggerate or overpromise. Signal that you understand their need and can deliver.',
             ],
             'complaint_reply' => [
                 'label' => 'Complaint Reply',
-                'instruction' => 'De-escalate tension, acknowledge the concern, and avoid defensive wording.',
+                'instruction' => 'De-escalate tension immediately. Acknowledge the concern without being defensive or dismissive. Take ownership where appropriate. Offer a clear next step. Do not make promises you cannot keep.',
             ],
             'apology_reply' => [
                 'label' => 'Apology Reply',
-                'instruction' => 'Take responsibility carefully, stay sincere, and avoid overpromising.',
+                'instruction' => 'Be genuinely sincere, not performative. Take appropriate responsibility without over-apologizing or making the sender look weak. Offer a clear path forward. Avoid vague language like "I\'m sorry you feel that way."',
             ],
             'follow_up_reply' => [
                 'label' => 'Follow-up Reply',
-                'instruction' => 'Be polite, timely, and clear about what the user is following up on.',
+                'instruction' => 'Write a confident, polite follow-up that signals the sender has been waiting but is not desperate. Be specific about what they are following up on. Make it easy for the receiver to respond.',
             ],
             'negotiation_reply' => [
                 'label' => 'Negotiation Reply',
-                'instruction' => 'Protect the user position with calm, firm, and practical wording.',
+                'instruction' => 'Hold the sender\'s position with calm, strategic confidence. Signal value clearly without appearing desperate. Do not concede unnecessarily. Protect the relationship while pushing firmly toward the goal.',
             ],
             'project_update_reply' => [
                 'label' => 'Project Update Reply',
-                'instruction' => 'Provide a clear update, next step, and realistic expectation.',
+                'instruction' => 'Provide a clear, factual status update with a concrete next step. Be honest about progress. Manage expectations proactively. Never make up details about completion or timelines.',
             ],
             'payment_reminder' => [
                 'label' => 'Payment Reminder',
-                'instruction' => 'Be firm but respectful about payment, avoiding desperation or hostility.',
+                'instruction' => 'Write a firm, dignified payment reminder. Signal that the sender has fulfilled their obligation and expects the same in return. Do not beg, apologize, or over-explain — that weakens positioning. A subtle urgency is acceptable but avoid aggression or desperation. Keep the door open to a positive response.',
             ],
             'delay_update' => [
                 'label' => 'Delay Update',
-                'instruction' => 'Explain the delay honestly, reduce friction, and avoid excuses.',
+                'instruction' => 'Communicate the delay honestly and concisely. Do not make excuses. Acknowledge the inconvenience, give a realistic revised expectation, and affirm commitment. Keep the receiver\'s trust intact.',
             ],
             'asking_for_requirements' => [
                 'label' => 'Asking for Requirements',
-                'instruction' => 'Ask clearly for the missing details needed to proceed efficiently.',
+                'instruction' => 'Ask clearly and efficiently for the specific information or materials needed to proceed. Frame it as enabling faster, better work. Avoid vague or open-ended requests.',
             ],
             'asking_for_access' => [
                 'label' => 'Asking for Access',
-                'instruction' => 'Request the required access clearly and professionally.',
+                'instruction' => 'Request the necessary access clearly, professionally, and with a brief reason why it is needed. Make it easy for the receiver to act quickly.',
             ],
             'review_request' => [
                 'label' => 'Review Request',
-                'instruction' => 'Ask for a review politely and naturally without pressure.',
+                'instruction' => 'Ask for a review in a natural, low-pressure way. Sound genuine and appreciative, not robotic or transactional. Make it easy for the receiver to take the action.',
             ],
             'support_response' => [
                 'label' => 'Support Response',
-                'instruction' => 'Be calm, practical, and helpful while giving the user confidence.',
+                'instruction' => 'Be calm, empathetic, and practical. Give the user confidence that their issue is understood and being handled. Provide a clear action or solution. Avoid jargon or overly scripted support language.',
             ],
             'friendly_daily_reply' => [
                 'label' => 'Friendly Daily Reply',
-                'instruction' => 'Keep it human and light while still improving clarity and tone.',
+                'instruction' => 'Keep it warm, human, and natural while improving clarity and flow. Match a conversational but thoughtful register.',
             ],
             'translation_improvement' => [
                 'label' => 'Translation Improvement',
-                'instruction' => 'Preserve meaning while improving clarity, grammar, and natural phrasing.',
+                'instruction' => 'Preserve the exact meaning while improving naturalness, clarity, grammar, and professional register. Do not add or remove intent.',
             ],
         ];
     }
@@ -268,24 +268,32 @@ class PromptContextResolver
         $normalized = Str::lower($message);
         $flags = [];
 
-        if (Str::contains($normalized, ['asap', 'urgent', 'immediately', 'right now', 'today only'])) {
-            $flags[] = 'urgency_pressure';
+        if (Str::contains($normalized, ['asap', 'urgent', 'immediately', 'right now', 'today only', 'by end of day', 'last chance'])) {
+            $flags[] = 'urgency_pressure — soften the urgency without losing firmness';
         }
 
-        if (Str::contains($normalized, ['angry', 'hate', 'worst', 'ridiculous', 'nonsense', 'stupid', 'idiot'])) {
-            $flags[] = 'hostile_tone';
+        if (Str::contains($normalized, ['angry', 'hate', 'worst', 'ridiculous', 'nonsense', 'stupid', 'idiot', 'pathetic', 'unacceptable', 'furious', 'disgusted'])) {
+            $flags[] = 'hostile_tone — rewrite to professional assertiveness';
         }
 
-        if (Str::contains($normalized, ['guarantee', 'definitely', 'for sure', '100%', 'promise'])) {
-            $flags[] = 'overpromise_risk';
+        if (Str::contains($normalized, ['guarantee', 'definitely', 'for sure', '100%', 'promise', 'i will make sure', 'without fail', 'always'])) {
+            $flags[] = 'overpromise_risk — replace with confident but non-binding language';
         }
 
-        if (Str::contains($normalized, ['legal action', 'court', 'sue', 'refund now or', 'police'])) {
-            $flags[] = 'escalation_risk';
+        if (Str::contains($normalized, ['legal action', 'court', 'sue', 'lawyer', 'refund now or', 'police', 'dispute', 'chargeback'])) {
+            $flags[] = 'escalation_risk — keep the door open for resolution before threats';
         }
 
-        if (Str::contains($normalized, ['please please', 'beg', 'desperate', 'kindly please sir'])) {
-            $flags[] = 'weak_positioning';
+        if (Str::contains($normalized, ['please please', 'beg', 'desperate', 'kindly please sir', 'i really need', 'so sorry to bother', 'hope you don\'t mind', 'if possible please'])) {
+            $flags[] = 'weak_positioning — rewrite to confident, equal-footing language';
+        }
+
+        if (Str::contains($normalized, ['sorry for disturbing', 'sorry to bother', 'sorry if', 'i apologize for contacting', 'forgive me for'])) {
+            $flags[] = 'unnecessary_apology — remove self-diminishing opener';
+        }
+
+        if (Str::contains($normalized, ['as per my last', 'as i said before', 'i already told you', 'how many times'])) {
+            $flags[] = 'passive_aggression — rewrite to firm but professional tone';
         }
 
         return array_values(array_unique($flags));

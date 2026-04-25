@@ -30,7 +30,14 @@
     </div>
 
     {{-- ── Scrollable messages area ── --}}
-    <div class="flex-1 overflow-y-auto">
+    <div
+        class="flex-1 overflow-y-auto"
+        x-data
+        x-init="
+            $nextTick(() => { $el.scrollTop = $el.scrollHeight; });
+            $wire.$watch('messages', () => { $nextTick(() => { $el.scrollTop = $el.scrollHeight; }); });
+        "
+    >
 
         @if (empty($messages))
 
