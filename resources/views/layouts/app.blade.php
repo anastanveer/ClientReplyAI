@@ -38,7 +38,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="flex h-screen overflow-hidden bg-[rgb(var(--page-bg))]">
+        <div class="flex h-screen flex-col overflow-hidden bg-[rgb(var(--page-bg))] lg:flex-row">
             <livewire:layout.navigation />
 
             <main class="flex min-w-0 flex-1 flex-col overflow-hidden">

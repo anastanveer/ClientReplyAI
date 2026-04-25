@@ -2,6 +2,31 @@
     x-data="{ mode: $wire.entangle('mode'), advancedOpen: $wire.entangle('advancedOpen') }"
     class="conversation-pane"
 >
+    {{-- ── Floating top row: mode tabs + usage (no bar, no border) ── --}}
+    <div class="flex shrink-0 items-center justify-between gap-3 px-4 pt-3 pb-1 sm:px-6">
+        <div class="inline-flex items-center gap-0.5 rounded-xl bg-stone-100/80 px-1.5 py-1 dark:bg-white/5">
+            <button
+                type="button"
+                @click="mode = 'quick'; advancedOpen = false"
+                :class="mode === 'quick' ? 'mode-tab-active' : 'mode-tab-inactive'"
+                class="rounded-lg px-2.5 py-1 text-xs font-semibold transition"
+            >Quick</button>
+            <button
+                type="button"
+                @click="mode = 'advanced'; advancedOpen = true"
+                :class="mode === 'advanced' ? 'mode-tab-active' : 'mode-tab-inactive'"
+                class="rounded-lg px-2.5 py-1 text-xs font-semibold transition"
+            >Advanced</button>
+        </div>
+        <p class="text-xs text-stone-400 dark:text-[#a1a1aa]">
+            @if ($dailyLimit !== null)
+                <span class="font-semibold text-stone-600 dark:text-[#ececec]">{{ $dailyUsage }}</span> / {{ $dailyLimit }} today
+            @else
+                <span class="font-semibold dark:text-[#a1a1aa]">Unlimited</span>
+            @endif
+        </p>
+    </div>
+
     {{-- ── Scrollable messages area ── --}}
     <div class="flex-1 overflow-y-auto">
 
