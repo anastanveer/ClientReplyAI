@@ -2,6 +2,8 @@
 
 namespace App\Services\Prompts;
 
+use App\Services\AIEngine\AIEngineContext;
+use App\Services\AIEngine\ReplyStrategyBuilder;
 use App\Services\Prompts\DTOs\BuiltPrompt;
 use App\Services\Prompts\DTOs\ResolvedPromptContext;
 
@@ -9,6 +11,7 @@ class ReplyPromptBuilder
 {
     public function __construct(
         protected PromptContextResolver $contextResolver,
+        protected ReplyStrategyBuilder $strategyBuilder,
     ) {}
 
     /**
@@ -18,9 +21,18 @@ class ReplyPromptBuilder
     {
         $context = $this->contextResolver->resolve($input);
 
+        // Run the AI Engine — pure PHP, no extra API calls
+        $engineContext = $this->strategyBuilder->build(
+            message:  $context->message,
+            useCase:  $context->useCaseRule['label'],
+            tone:     $context->toneRule['label'],
+            receiver: $context->receiver,
+            context:  $context->additionalContext,
+        );
+
         return new BuiltPrompt(
             systemPrompt: $this->buildSystemPrompt($context),
-            userPrompt: $this->buildUserPrompt($context),
+            userPrompt: $this->buildUserPrompt($context, $engineContext),
             variants: $context->allowedVariants,
             riskFlags: $context->riskFlags,
             responseSchema: $this->responseSchema($context),
@@ -72,11 +84,11 @@ class ReplyPromptBuilder
         return implode("\n", $lines);
     }
 
-    protected function buildUserPrompt(ResolvedPromptContext $context): string
+    protected function buildUserPrompt(ResolvedPromptContext $context, ?AIEngineContext $engineContext = null): string
     {
         $sections = [
             '## TASK',
-            'Rewrite the message below into a polished, human, outcome-driven reply. Apply full communication intelligence.',
+            'Rewrite the message below into a polished, human, outcome-driven reply.',
             '',
             '## INPUT MESSAGE',
             $context->message,
@@ -103,19 +115,10 @@ class ReplyPromptBuilder
             $sections[] = 'Platform: '.$context->platform;
         }
 
-        $sections[] = '';
-        $sections[] = '## INTELLIGENCE CHECKLIST — apply silently before writing';
-        $sections[] = '1. What is the sender\'s real intent? (get paid / maintain relationship / push strongly / de-escalate / inform / request)';
-        $sections[] = '2. What type of receiver is this likely addressed to? Infer from context.';
-        $sections[] = '3. What reply wording will best achieve the sender\'s outcome?';
-        $sections[] = '4. Is the input weak or vague? If yes — elevate it using the use case. Do not ask questions.';
-        $sections[] = '5. Does the reply feel human, confident, and natural? If not — rewrite.';
-
-        if ($context->riskFlags !== []) {
+        // Inject AI Engine analysis — this is the intelligence layer
+        if ($engineContext !== null) {
             $sections[] = '';
-            $sections[] = '## DETECTED WORDING RISKS';
-            $sections[] = implode(', ', $context->riskFlags).'.';
-            $sections[] = 'Rewrite to neutralize these risks while preserving the sender\'s intent and position.';
+            $sections[] = $engineContext->toPromptSection();
         }
 
         if ($context->hasOptionalVariants()) {
@@ -127,7 +130,7 @@ class ReplyPromptBuilder
         $sections[] = '';
         $sections[] = '## OUTPUT RULES';
         $sections[] = '- Reply must be copy-paste ready with zero editing.';
-        $sections[] = '- Sound human and purposeful — not templated, not robotic, not overly formal.';
+        $sections[] = '- Sound human and purposeful — not templated, not robotic.';
         $sections[] = '- Preserve the sender\'s intent and all factual claims exactly.';
         $sections[] = '- Do not add invented details, timelines, promises, or commitments.';
         $sections[] = '- Return JSON only — no markdown, no explanation outside the JSON object.';

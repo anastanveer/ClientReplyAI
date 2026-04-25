@@ -86,7 +86,9 @@ new class extends Component
     $navUsage = $this->navUsage();
     $userName = auth()->user()->name ?? '';
     $userEmail = auth()->user()->email ?? '';
+    $userPlan = ucfirst(auth()->user()->plan ?? 'free');
     $initials = strtoupper(substr($userName, 0, 2));
+    $avatarUrl = auth()->user()->avatar_url ?? null;
 @endphp
 
 <nav x-data="{ open: false }" class="relative shrink-0">
@@ -325,45 +327,100 @@ new class extends Component
             @endif
         </div>
 
-        {{-- Usage + user footer --}}
-        <div class="sidebar-footer flex-col gap-2">
-            {{-- Usage bar --}}
-            @if ($navUsage['limit'] !== null)
-                <div class="w-full rounded-xl bg-stone-100 px-3 py-2.5 dark:bg-[rgb(var(--surface-muted))]">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-stone-500 dark:text-[rgb(var(--text-muted))]">
-                            {{ $navUsage['used'] }} / {{ $navUsage['limit'] }} replies today
-                        </span>
-                        <span class="text-xs font-semibold text-stone-600 dark:text-[rgb(var(--text-muted))]">{{ $navUsage['percent'] }}%</span>
-                    </div>
-                    <div class="mt-1.5 h-1 overflow-hidden rounded-full bg-stone-200 dark:bg-[rgb(var(--border-soft))]">
-                        <div class="h-full rounded-full bg-slate-700 transition-all dark:bg-[rgb(var(--brand))]" style="width: {{ $navUsage['percent'] }}%"></div>
+        {{-- User footer with profile popup --}}
+        <div
+            class="sidebar-footer"
+            x-data="{ pOpen: false, px: 0, py: 0 }"
+            @click.outside="pOpen = false"
+        >
+            <button
+                type="button"
+                class="flex w-full items-center gap-2.5 rounded-xl px-2 py-2 transition hover:bg-stone-100 dark:hover:bg-[rgb(var(--surface-muted))]"
+                @click="const r=$el.getBoundingClientRect(); px=r.left; py=r.top; pOpen=!pOpen"
+            >
+                @if ($avatarUrl)
+                    <img src="{{ $avatarUrl }}" class="h-8 w-8 shrink-0 rounded-full object-cover" alt="{{ $initials }}" />
+                @else
+                    <div class="gpt-avatar shrink-0">{{ $initials }}</div>
+                @endif
+                <div class="min-w-0 flex-1 text-left">
+                    <div
+                        class="truncate text-sm font-medium text-stone-800 dark:text-[rgb(var(--text-main))]"
+                        x-data="{{ json_encode(['name' => $userName]) }}"
+                        x-text="name"
+                        x-on:profile-updated.window="name = $event.detail.name"
+                    ></div>
+                    <div class="text-xs text-stone-400 dark:text-[#71717a]">{{ $userPlan }}</div>
+                </div>
+                <svg class="h-4 w-4 shrink-0 text-stone-400 dark:text-[#71717a]" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                </svg>
+            </button>
+
+            {{-- Profile popup (fixed, opens upward) --}}
+            <div
+                x-cloak
+                x-show="pOpen"
+                x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-1"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-1"
+                class="profile-popup"
+                :style="`position:fixed;bottom:calc(100vh - ${py}px + 8px);left:${px}px;z-index:9999`"
+            >
+                {{-- User info header --}}
+                <div class="flex items-center gap-3 px-4 py-3 border-b border-stone-100 dark:border-[rgb(var(--border-soft))]">
+                    @if ($avatarUrl)
+                        <img src="{{ $avatarUrl }}" class="h-9 w-9 shrink-0 rounded-full object-cover" alt="{{ $initials }}" />
+                    @else
+                        <div class="gpt-avatar shrink-0">{{ $initials }}</div>
+                    @endif
+                    <div class="min-w-0">
+                        <div class="truncate text-sm font-semibold text-stone-800 dark:text-[#ececec]">{{ $userName }}</div>
+                        <div class="text-xs text-stone-400 dark:text-[#71717a]">{{ $userPlan }}</div>
                     </div>
                 </div>
-            @endif
 
-            {{-- User row --}}
-            <div class="flex w-full items-center gap-2">
-                <a href="{{ route('profile') }}" wire:navigate class="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-stone-200/60 dark:hover:bg-[rgb(var(--surface-muted))]">
-                    <div class="gpt-avatar shrink-0">{{ $initials }}</div>
-                    <div class="min-w-0 flex-1">
-                        <div
-                            class="truncate text-sm font-medium text-stone-800 dark:text-[rgb(var(--text-main))]"
-                            x-data="{{ json_encode(['name' => $userName]) }}"
-                            x-text="name"
-                            x-on:profile-updated.window="name = $event.detail.name"
-                        ></div>
-                    </div>
-                </a>
-                <button
-                    wire:click="logout"
-                    class="gpt-icon-btn"
-                    title="Log out"
-                >
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
-                    </svg>
-                </button>
+                {{-- Menu items --}}
+                <div class="py-1">
+                    <a href="{{ route('pricing') }}" wire:navigate class="profile-popup-item" @click="pOpen=false">
+                        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+                        </svg>
+                        Upgrade plan
+                    </a>
+
+                    <a href="{{ route('profile') }}" wire:navigate class="profile-popup-item" @click="pOpen=false">
+                        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                        Profile
+                    </a>
+
+                    <a href="{{ route('settings') }}" wire:navigate class="profile-popup-item" @click="pOpen=false">
+                        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        Settings
+                    </a>
+                </div>
+
+                <div class="border-t border-stone-100 py-1 dark:border-[rgb(var(--border-soft))]">
+                    <button
+                        type="button"
+                        class="profile-popup-item profile-popup-item-danger w-full"
+                        wire:click="logout"
+                        @click="pOpen=false"
+                    >
+                        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                        </svg>
+                        Log out
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -512,12 +569,21 @@ new class extends Component
         @endif
 
         {{-- User footer --}}
-        <div class="sidebar-footer">
-            <div class="gpt-avatar shrink-0">{{ $initials }}</div>
+        <div class="sidebar-footer gap-2">
+            @if ($avatarUrl)
+                <img src="{{ $avatarUrl }}" class="h-8 w-8 shrink-0 rounded-full object-cover" alt="{{ $initials }}" />
+            @else
+                <div class="gpt-avatar shrink-0">{{ $initials }}</div>
+            @endif
             <div class="min-w-0 flex-1">
                 <div class="truncate text-sm font-medium text-stone-800 dark:text-[rgb(var(--text-main))]">{{ $userName }}</div>
-                <div class="truncate text-xs text-stone-500 dark:text-[rgb(var(--text-muted))]">{{ $userEmail }}</div>
+                <div class="text-xs text-stone-400 dark:text-[#71717a]">{{ $userPlan }}</div>
             </div>
+            <a href="{{ route('profile') }}" wire:navigate class="gpt-icon-btn" title="Profile" @click="open=false">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+            </a>
             <button wire:click="logout" class="gpt-icon-btn" title="Log out">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
