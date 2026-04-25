@@ -100,6 +100,11 @@ class GeminiProvider extends AbstractProvider
         $segments = [];
 
         foreach ($parts as $part) {
+            // Gemini 2.5 Flash thinking model includes thought parts — skip them
+            if (data_get($part, 'thought') === true) {
+                continue;
+            }
+
             $text = trim((string) data_get($part, 'text', ''));
 
             if ($text !== '') {

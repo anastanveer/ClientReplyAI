@@ -192,6 +192,17 @@ class ReplyGenerationService
 
         if (str_starts_with($trimmed, '```')) {
             $trimmed = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', $trimmed) ?? $trimmed;
+            $trimmed = trim($trimmed);
+        }
+
+        // If content has preamble text before the JSON object, extract just the object
+        if (! str_starts_with($trimmed, '{')) {
+            $start = strpos($trimmed, '{');
+            $end = strrpos($trimmed, '}');
+
+            if ($start !== false && $end !== false && $end > $start) {
+                $trimmed = substr($trimmed, $start, $end - $start + 1);
+            }
         }
 
         return trim($trimmed);
