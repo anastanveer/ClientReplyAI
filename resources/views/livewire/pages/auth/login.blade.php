@@ -26,11 +26,11 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div>
     <div class="mb-8">
-        <span class="inline-flex rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+        <span class="inline-flex rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500 dark:border-[rgb(var(--border-soft))] dark:bg-[rgba(255,255,255,0.06)] dark:text-[rgb(var(--text-muted))]">
             Welcome back
         </span>
-        <h1 class="mt-4 text-3xl font-semibold tracking-tight text-stone-950">Log in to your reply workspace</h1>
-        <p class="mt-2 text-sm leading-6 text-stone-600">
+        <h1 class="mt-4 text-3xl font-semibold tracking-tight text-stone-950 dark:text-[rgb(var(--text-main))]">Log in to your reply workspace</h1>
+        <p class="mt-2 text-sm leading-6 text-stone-600 dark:text-[rgb(var(--text-muted))]">
             Generate polished replies, save your best responses, and keep your communication workflow in one place.
         </p>
     </div>
@@ -52,12 +52,12 @@ new #[Layout('layouts.guest')] class extends Component
 
         <div class="flex items-center justify-between gap-3">
             <label for="remember" class="inline-flex items-center">
-                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-stone-300 text-slate-950 shadow-sm focus:ring-stone-300" name="remember">
-                <span class="ms-2 text-sm text-stone-600">{{ __('Remember me') }}</span>
+                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-stone-300 text-slate-950 shadow-sm focus:ring-stone-300 dark:border-[rgb(var(--border-soft))] dark:bg-[#2f2f2f]" name="remember">
+                <span class="ms-2 text-sm text-stone-600 dark:text-[rgb(var(--text-muted))]">{{ __('Remember me') }}</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a class="text-sm font-medium text-stone-600 transition hover:text-stone-950 focus:outline-none" href="{{ route('password.request') }}" wire:navigate>
+                <a class="text-sm font-medium text-stone-600 transition hover:text-stone-950 focus:outline-none dark:text-[rgb(var(--text-muted))] dark:hover:text-[rgb(var(--text-main))]" href="{{ route('password.request') }}" wire:navigate>
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
@@ -67,9 +67,9 @@ new #[Layout('layouts.guest')] class extends Component
             {{ __('Log in') }}
         </x-primary-button>
 
-        <p class="text-center text-sm text-stone-500">
+        <p class="text-center text-sm text-stone-500 dark:text-[rgb(var(--text-muted))]">
             New here?
-            <a href="{{ route('register') }}" class="font-semibold text-stone-900 hover:text-slate-700" wire:navigate>Start your free account</a>
+            <a href="{{ route('register') }}" class="font-semibold text-stone-900 hover:text-slate-700 dark:text-[rgb(var(--text-main))] dark:hover:text-white" wire:navigate>Start your free account</a>
         </p>
     </form>
 </div>

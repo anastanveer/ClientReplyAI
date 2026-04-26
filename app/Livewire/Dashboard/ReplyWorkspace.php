@@ -69,9 +69,9 @@ class ReplyWorkspace extends Component
 
     public int $dailyUsage = 0;
 
-    public ?int $dailyLimit = 5;
+    public ?int $dailyLimit = 10;
 
-    public ?int $dailyRemaining = 5;
+    public ?int $dailyRemaining = 10;
 
     public function mount(): void
     {

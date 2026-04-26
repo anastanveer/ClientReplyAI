@@ -38,12 +38,12 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div>
     <div class="mb-8">
-        <span class="inline-flex rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+        <span class="inline-flex rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500 dark:border-[rgb(var(--border-soft))] dark:bg-[rgba(255,255,255,0.06)] dark:text-[rgb(var(--text-muted))]">
             Start free
         </span>
-        <h1 class="mt-4 text-3xl font-semibold tracking-tight text-stone-950">Create your ClientReplyAI account</h1>
-        <p class="mt-2 text-sm leading-6 text-stone-600">
-            Set up the MVP workspace now. Billing and advanced Pro features can be added later without changing the auth foundation.
+        <h1 class="mt-4 text-3xl font-semibold tracking-tight text-stone-950 dark:text-[rgb(var(--text-main))]">Create your ClientReplyAI account</h1>
+        <p class="mt-2 text-sm leading-6 text-stone-600 dark:text-[rgb(var(--text-muted))]">
+            No credit card required. Start generating polished replies in under a minute.
         </p>
     </div>
 
@@ -76,9 +76,9 @@ new #[Layout('layouts.guest')] class extends Component
             {{ __('Create account') }}
         </x-primary-button>
 
-        <p class="text-center text-sm text-stone-500">
+        <p class="text-center text-sm text-stone-500 dark:text-[rgb(var(--text-muted))]">
             Already registered?
-            <a href="{{ route('login') }}" class="font-semibold text-stone-900 hover:text-slate-700" wire:navigate>Log in</a>
+            <a href="{{ route('login') }}" class="font-semibold text-stone-900 hover:text-slate-700 dark:text-[rgb(var(--text-main))] dark:hover:text-white" wire:navigate>Log in</a>
         </p>
     </form>
 </div>
