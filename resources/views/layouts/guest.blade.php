@@ -35,13 +35,25 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <style>
+            .guest-left-panel {
+                background-image: radial-gradient(circle at top left, rgba(25,91,255,0.22), transparent 36%),
+                                  linear-gradient(180deg, rgba(255,255,255,0.95), rgba(240,234,225,0.95));
+                background-color: #ffffff;
+            }
+            .dark .guest-left-panel {
+                background-image: none;
+                background-color: #1e1e1e;
+            }
+        </style>
     </head>
     <body class="font-sans text-stone-950 antialiased bg-[#fafaf9] dark:bg-[#212121]">
         <div class="relative min-h-screen overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
             <div class="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl overflow-hidden rounded-[32px] border border-white/70 bg-white/75 shadow-[0_30px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-[rgba(255,255,255,0.06)] dark:bg-[#2a2a2a] dark:shadow-[0_30px_80px_rgba(0,0,0,0.5)] lg:grid-cols-[1.1fr_0.9fr]">
 
                 {{-- Left panel --}}
-                <section class="hidden flex-col justify-between border-r border-stone-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(25,91,255,0.22),_transparent_36%),linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(240,234,225,0.95))] p-10 dark:border-[rgb(var(--border-soft))] dark:bg-[#1e1e1e] lg:flex">
+                <section class="guest-left-panel hidden flex-col justify-between border-r border-stone-200/80 p-10 dark:border-[rgb(var(--border-soft))] lg:flex">
                     <div class="space-y-8">
                         <a href="{{ route('home') }}" class="inline-flex items-center gap-3 text-stone-950 dark:text-[rgb(var(--text-main))]" wire:navigate>
                             <x-application-logo class="h-11 w-11" />
